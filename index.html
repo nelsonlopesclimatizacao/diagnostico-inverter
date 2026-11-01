@@ -70,7 +70,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.19 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v2.0 (01/11/2026)</small>
 </header>
 
 <main>
@@ -239,6 +239,45 @@ a{color:#1d4f9a}
   </details>
 </section>
 
+<!-- ================= DIMENSIONAMENTO ================= -->
+<section id="v-btu" class="hidden">
+  <h2>Dimensionamento rápido (BTU/h)</h2>
+  <div class="note">Método prático de campo (carga por m² + pessoas + equipamentos + correções). Serve para orçamento e escolha da capacidade em ambientes residenciais e comerciais leves. Para auditório, loja com vitrine grande, cozinha industrial ou laudo, faça cálculo de carga térmica (NBR 16401).</div>
+  <div class="card">
+    <div class="row">
+      <div style="flex:1;min-width:90px"><label>Comprimento (m)</label><input id="bC" inputmode="decimal" oninput="calcBtu()"></div>
+      <div style="flex:1;min-width:90px"><label>Largura (m)</label><input id="bL" inputmode="decimal" oninput="calcBtu()"></div>
+      <div style="flex:1;min-width:90px"><label>ou Área (m²)</label><input id="bA" inputmode="decimal" oninput="calcBtu()"></div>
+    </div>
+    <div class="row">
+      <div style="flex:1;min-width:120px"><label>Pé-direito (m)</label><input id="bH" inputmode="decimal" value="2,7" oninput="calcBtu()"></div>
+      <div style="flex:1;min-width:120px"><label>Pessoas no ambiente</label><input id="bP" inputmode="numeric" value="2" oninput="calcBtu()"></div>
+      <div style="flex:1;min-width:120px"><label>Eletrônicos (TV, PC, geladeira…)</label><input id="bE" inputmode="numeric" value="1" oninput="calcBtu()"></div>
+    </div>
+    <label>Exposição ao sol</label>
+    <select id="bS" onchange="calcBtu()">
+      <option value="600">Sombra / sol fraco (fachada sul, sem sol direto)</option>
+      <option value="700" selected>Sol da manhã</option>
+      <option value="800">Sol da tarde (fachada oeste)</option>
+      <option value="900">Sol da tarde + telhado sem forro / último andar / laje exposta</option>
+    </select>
+    <label>Tipo de ambiente</label>
+    <select id="bT" onchange="calcBtu()">
+      <option value="1">Quarto / sala / escritório</option>
+      <option value="1.15">Comércio com movimento de pessoas / porta abrindo</option>
+      <option value="1.2">Cozinha residencial / ambiente com fogão</option>
+      <option value="1.1">Consultório / sala com equipamentos</option>
+    </select>
+    <label style="display:flex;gap:8px;align-items:center;font-size:13px;color:var(--tx)"><input type="checkbox" id="bV" style="width:auto" onchange="calcBtu()"> Muito vidro exposto ao sol (janelas grandes sem película/cortina)</label>
+    <div id="bOut" style="margin-top:10px"></div>
+    <div class="row" style="margin-top:8px"><button class="btn lite sm" onclick="copyBtu()">Copiar resumo para o cliente</button></div>
+  </div>
+  <div class="card">
+    <h3>Como o cálculo é feito</h3>
+    <p class="mut" style="margin:0">Área × carga por m² (600 a 900 BTU/h conforme o sol) × correção do pé-direito (acima de 2,7 m) + 600 BTU/h por pessoa além da primeira + 600 BTU/h por eletrônico; depois × fator do tipo de ambiente e +10% se houver muito vidro ao sol. A capacidade indicada é o próximo tamanho comercial acima do calculado. No Cariri, com telha cerâmica sem forro e sol da tarde, prefira a opção de 900 BTU/h/m².</p>
+  </div>
+</section>
+
 <!-- ================= CASOS ================= -->
 <section id="v-casos" class="hidden">
   <h2>Registrar atendimento</h2>
@@ -279,7 +318,8 @@ a{color:#1d4f9a}
   <button data-v="sintomas"><span>⚑</span>Sintomas</button>
   <button data-v="testes"><span>⚡</span>Testes</button>
   <button data-v="tabelas"><span>▦</span>Tabelas</button>
-  <button data-v="instal"><span>⇄</span>Instalação</button>
+  <button data-v="instal"><span>⇄</span>Instal.</button>
+  <button data-v="btu"><span>❄</span>BTU</button>
   <button data-v="casos"><span>✎</span>Casos</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -799,6 +839,35 @@ function calcCap(){
   if(N>0){const d=(c-N)/N*100;t+=" Diferença: "+(d>0?"+":"")+d.toFixed(0)+"% do nominal → "+(Math.abs(d)<=5?"<b style='color:#1e7b46'>OK</b>":Math.abs(d)<=10?"<b style='color:#b26b00'>no limite, acompanhar</b>":"<b style='color:#b3261e'>fora – trocar</b>")+"."}
   o.innerHTML=t;
 }
+const SIZES=[9000,12000,18000,22000,24000,30000,36000,48000,60000];
+let BTU_LAST="";
+function calcBtu(){
+  const n=id=>{const v=parseFloat(String(document.getElementById(id).value).replace(",","."));return isNaN(v)?0:v};
+  let A=n("bA");const C=n("bC"),L=n("bL");if(C>0&&L>0)A=C*L;
+  const o=document.getElementById("bOut");
+  if(!(A>0)){o.innerHTML='<div class="mut">Informe comprimento × largura ou a área.</div>';BTU_LAST="";return}
+  const H=n("bH")||2.7,P=Math.max(0,Math.round(n("bP"))),E=Math.max(0,Math.round(n("bE"))),S=n("bS"),T=n("bT"),V=document.getElementById("bV").checked;
+  const fh=Math.max(1,H/2.7);
+  let base=A*S*fh, pes=600*Math.max(0,P-1), eq=600*E;
+  let tot=(base+pes+eq)*T*(V?1.1:1);
+  const rec=SIZES.find(s=>s>=tot)||null;
+  const low=SIZES.filter(s=>s<tot).pop();
+  const fmt=x=>Math.round(x).toLocaleString("pt-BR");
+  let rc=rec?`<b style="font-size:22px;color:var(--navy)">${fmt(rec)} BTU/h</b>`:`<b style="color:var(--bad)">Acima de 60.000 BTU/h – dividir em mais de uma máquina ou fazer cálculo de carga térmica</b>`;
+  let aviso="";
+  if(low&&tot<=low*1.05)aviso=`<div class="mut">O calculado está só ${((tot/low-1)*100).toFixed(0)}% acima de ${fmt(low)} BTU/h; um inverter de ${fmt(low)} pode atender se o ambiente for bem vedado e sem sol forte.</div>`;
+  if(rec&&rec>=36000)aviso+=`<div class="mut">Acima de 36.000 BTU/h confirme com cálculo de carga térmica e verifique a entrada de energia (bifásico/trifásico).</div>`;
+  o.innerHTML=`<div class="card" style="background:#f7f9fc;margin:0">Calculado: <b>${fmt(tot)} BTU/h</b> (${fmt(tot/A)} BTU/h por m²)<br>Indicado: ${rc}${aviso}
+  <div class="mut" style="margin-top:6px">Área ${A.toFixed(1).replace(".",",")} m² · base ${fmt(base)} + pessoas ${fmt(pes)} + eletrônicos ${fmt(eq)} · fator ambiente ×${T}${V?" · vidro +10%":""}${fh>1?" · pé-direito ×"+fh.toFixed(2):""}</div></div>`;
+  BTU_LAST=`DIMENSIONAMENTO DE CLIMATIZAÇÃO
+Ambiente: ${A.toFixed(1).replace(".",",")} m², pé-direito ${String(H).replace(".",",")} m, ${P} pessoa(s), ${E} eletrônico(s)
+Exposição solar: ${document.getElementById("bS").selectedOptions[0].text}
+Tipo: ${document.getElementById("bT").selectedOptions[0].text}${V?"\nMuito vidro exposto ao sol":""}
+Carga estimada: ${fmt(tot)} BTU/h
+Capacidade recomendada: ${rec?fmt(rec)+" BTU/h":"acima de 60.000 BTU/h (dividir em mais unidades)"}
+Nelson Lopes Climatização – (88) 9 9742-3664`;
+}
+function copyBtu(){if(!BTU_LAST){toast("Calcule primeiro");return}copyTxt(BTU_LAST,"Resumo copiado")}
 /* ===================== CASOS ===================== */
 const CF=["cCli","cMarca","cMod","cCod","cV","cDC","cA","cP","cSH","cMed","cDiag","cSol"];
 function saveCase(){
@@ -985,7 +1054,7 @@ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
   window.scrollTo(0,0);
 });
 document.getElementById("q").addEventListener("input",renderCodes);
-renderChips();renderCodes();renderFlows();renderTests();renderNTC();renderCases();renderInst();
+renderChips();renderCodes();renderFlows();renderTests();renderNTC();renderCases();renderInst();calcBtu();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
