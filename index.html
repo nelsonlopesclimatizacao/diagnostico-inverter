@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f2747">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Diagnóstico Inverter – Nelson Lopes Climatização</title>
+<style>
+:root{--navy:#0f2747;--navy2:#183a66;--gold:#c9a23a;--gold2:#f3e6bf;--bg:#f4f6fa;--card:#fff;--tx:#1a2333;--mut:#5b6678;--ok:#1e7b46;--warn:#b26b00;--bad:#b3261e;--line:#dfe4ec}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);font-size:15px;line-height:1.45;padding-bottom:72px}
+header{background:var(--navy);color:#fff;padding:12px 14px 10px;border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:17px;letter-spacing:.2px}
+header small{color:var(--gold2);font-size:12px}
+main{padding:12px;max-width:760px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--navy);display:flex;border-top:2px solid var(--gold);z-index:6}
+nav button{flex:1;background:none;border:0;color:#c8d3e6;padding:9px 2px 10px;font-size:12px;font-weight:600}
+nav button span{display:block;font-size:18px;line-height:1.2}
+nav button.on{color:var(--gold)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+h2{font-size:16px;margin:4px 0 10px;color:var(--navy)}
+h3{font-size:15px;margin:0 0 6px;color:var(--navy)}
+input,select,textarea{width:100%;padding:10px;border:1px solid #c5ccd8;border-radius:8px;font-size:15px;background:#fff;color:var(--tx)}
+textarea{min-height:70px}
+label{font-size:12px;color:var(--mut);display:block;margin:8px 0 3px;font-weight:600}
+.btn{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:10px 14px;font-weight:600;font-size:14px}
+.btn.gold{background:var(--gold);color:var(--navy)}
+.btn.lite{background:#e8edf5;color:var(--navy)}
+.btn.sm{padding:6px 10px;font-size:13px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px}
+.chip{white-space:nowrap;border:1px solid var(--navy2);background:#fff;color:var(--navy);border-radius:16px;padding:6px 11px;font-size:13px;font-weight:600}
+.chip.on{background:var(--navy);color:#fff}
+.code{font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;font-size:17px;color:var(--navy);background:var(--gold2);border-radius:6px;padding:1px 7px;display:inline-block}
+.badge{font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px;display:inline-block;margin-left:4px;vertical-align:middle}
+.bF{background:#dff3e6;color:var(--ok)}.bC{background:#e3ecfb;color:#1d4f9a}.bA{background:#fdf0d9;color:var(--warn)}.bU{background:#efe3fb;color:#5b2a91}
+.mut{color:var(--mut);font-size:13px}
+.line{font-size:12px;color:var(--mut);margin:2px 0 4px}
+.chk{margin-top:6px;font-size:14px;border-left:3px solid var(--gold);padding-left:8px}
+details{background:#fff;border:1px solid var(--line);border-radius:10px;margin-bottom:9px}
+summary{padding:12px;font-weight:700;color:var(--navy);cursor:pointer;list-style:none}
+summary::after{content:"▾";float:right;color:var(--gold)}
+details[open] summary{border-bottom:1px solid var(--line)}
+.dbody{padding:10px 12px 12px}
+ol.steps{margin:0;padding-left:20px}
+ol.steps li{margin-bottom:9px}
+.if{display:block;font-size:13.5px;margin-top:3px;padding:5px 8px;background:#f2f5fa;border-radius:6px}
+.if b{color:var(--navy)}
+.alert{background:#fde8e6;border:1px solid #f2b8b2;color:#7a1c15;border-radius:8px;padding:9px 11px;font-size:13.5px;margin-bottom:10px}
+.note{background:#fff8e5;border:1px solid #f0dca4;border-radius:8px;padding:9px 11px;font-size:13.5px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid var(--line);padding:5px 4px;text-align:center}
+th{background:var(--navy);color:#fff;font-weight:600}
+tr:nth-child(even) td{background:#f7f9fc}
+.scroll{overflow-x:auto}
+.hidden{display:none}
+a{color:#1d4f9a}
+.empty{text-align:center;color:var(--mut);padding:20px 8px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:9px 16px;border-radius:20px;font-size:14px;z-index:9;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <h1>Diagnóstico Inverter</h1>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.0 (01/11/2026)</small>
+</header>
+
+<main>
+<!-- ================= CÓDIGOS ================= -->
+<section id="v-codigos">
+  <div class="alert"><b>Código não é diagnóstico.</b> O código aponta o <i>circuito</i> que a placa acusou, não a peça. Confirme sempre o modelo na etiqueta e a tabela do manual daquele modelo antes de condenar componente.</div>
+  <div class="chips" id="brandChips"></div>
+  <input id="q" type="search" placeholder="Buscar código ou palavra (ex.: E6, IPM, comunicação)">
+  <div class="mut" style="margin:6px 2px 8px">
+    <span class="badge bF">Fabricante</span> doc. oficial
+    <span class="badge bC">Compilação</span> manual de serviço / compilado técnico
+    <span class="badge bA">A confirmar</span> referência de campo
+    <span class="badge bU">Meu</span> cadastrado por você
+  </div>
+  <div id="brandNote"></div>
+  <div id="codeList"></div>
+  <details id="addBox">
+    <summary>+ Cadastrar código do manual</summary>
+    <div class="dbody">
+      <label>Marca</label><input id="aMarca" placeholder="Ex.: Philco">
+      <label>Linha / modelo</label><input id="aLinha" placeholder="Ex.: PAC12000IFM15">
+      <label>Código</label><input id="aCod" placeholder="Ex.: E8">
+      <label>Significado (como está no manual)</label><textarea id="aSig"></textarea>
+      <label>O que conferir primeiro</label><textarea id="aChk"></textarea>
+      <label>Fonte (manual, página, revisão)</label><input id="aFonte" placeholder="Ex.: Manual de instalação rev.03, p.42">
+      <div class="row" style="margin-top:10px"><button class="btn gold" onclick="addCode()">Salvar código</button></div>
+    </div>
+  </details>
+</section>
+
+<!-- ================= SINTOMAS ================= -->
+<section id="v-sintomas" class="hidden">
+  <h2>Fluxos por sintoma (inverter)</h2>
+  <div class="note">Regra de ouro: <b>entrada → barramento DC → saída do IPM → compressor</b>. Siga a energia. Só condene a placa depois de descartar alimentação, sensores, cabos e compressor.</div>
+  <div id="flows"></div>
+</section>
+
+<!-- ================= TESTES ================= -->
+<section id="v-testes" class="hidden">
+  <h2>Testes de componentes</h2>
+  <div class="alert"><b>Barramento DC:</b> os capacitores retêm ~310–390 Vcc por minutos após desligar. Meça P–N antes de tocar na placa. Descarregue com resistor de potência, nunca em curto direto.</div>
+  <div id="tests"></div>
+</section>
+
+<!-- ================= TABELAS ================= -->
+<section id="v-tabelas" class="hidden">
+  <h2>Termistores NTC (valores aproximados)</h2>
+  <div class="note">Curva teórica (modelo β). Serve para identificar sensor <b>aberto, em curto ou muito fora</b> (&gt;10–15%). Para ajuste fino, use a tabela do manual do modelo. Meça com o sensor <b>desconectado</b> da placa e compare com a temperatura real do ponto (termômetro).</div>
+  <div class="scroll" id="ntc"></div>
+  <p class="mut">Referências comuns: Midea/Springer T1, T2, T3, T4 ≈ 10 kΩ a 25 °C e sensor de descarga (TP) ≈ 50 kΩ a 25 °C. Gree, LG, Samsung e outras variam (5, 10, 15, 20 ou 50 kΩ). Confirme o valor nominal no manual ou na etiqueta do sensor.</p>
+
+  <h2 style="margin-top:16px">Valores de referência</h2>
+  <div class="card scroll">
+  <table>
+    <tr><th>Grandeza</th><th>Referência típica</th></tr>
+    <tr><td>Barramento DC (rede 220 V, PFC inativo)</td><td>≈ 1,41 × Vrede ≈ 300–320 Vcc</td></tr>
+    <tr><td>Barramento DC com PFC ativo</td><td>≈ 360–390 Vcc (varia por placa)</td></tr>
+    <tr><td>Tensão de rede admissível (220 V)</td><td>≈ 198–242 V (±10%) — confirmar no manual</td></tr>
+    <tr><td>Enrolamentos do compressor U-V / V-W / W-U</td><td>Iguais entre si (dif. &lt; 5%); geralmente 0,5–3 Ω</td></tr>
+    <tr><td>Isolamento compressor × carcaça</td><td>Megômetro 500 Vcc, compressor desconectado: ≥ 2 MΩ como referência</td></tr>
+    <tr><td>Queda direta diodo IPM / ponte (escala diodo)</td><td>≈ 0,3–0,6 V num sentido; OL no inverso</td></tr>
+    <tr><td>Motor ventilador DC (BLDC) – alimentação</td><td>Vdc ≈ 310 V · Vcc ≈ 15 V · Vsp ≈ 0–6,5 V</td></tr>
+    <tr><td>Bobina da EEV (12 V, 5 fios)</td><td>Cada fase ≈ 40–50 Ω para o comum (verificar modelo)</td></tr>
+  </table>
+  <p class="mut" style="margin:6px 0 0">Valores típicos de campo. Em caso de divergência, vale o manual de serviço do modelo.</p>
+  </div>
+</section>
+
+<!-- ================= CASOS ================= -->
+<section id="v-casos" class="hidden">
+  <h2>Registrar atendimento</h2>
+  <div class="card">
+    <label>Cliente / local</label><input id="cCli">
+    <div class="row">
+      <div style="flex:1;min-width:140px"><label>Marca</label><input id="cMarca"></div>
+      <div style="flex:1;min-width:140px"><label>Modelo (UI / UE)</label><input id="cMod"></div>
+    </div>
+    <div class="row">
+      <div style="flex:1;min-width:100px"><label>Código exibido</label><input id="cCod"></div>
+      <div style="flex:1;min-width:100px"><label>Tensão rede (V)</label><input id="cV" inputmode="decimal"></div>
+      <div style="flex:1;min-width:100px"><label>Barramento DC (V)</label><input id="cDC" inputmode="decimal"></div>
+    </div>
+    <div class="row">
+      <div style="flex:1;min-width:100px"><label>Corrente (A)</label><input id="cA" inputmode="decimal"></div>
+      <div style="flex:1;min-width:100px"><label>Pressão sucção (psig)</label><input id="cP" inputmode="decimal"></div>
+      <div style="flex:1;min-width:100px"><label>Superaquec. (K)</label><input id="cSH" inputmode="decimal"></div>
+    </div>
+    <label>Medições adicionais (U-V-W, sensores, IPM…)</label><textarea id="cMed"></textarea>
+    <label>Diagnóstico / causa raiz</label><textarea id="cDiag"></textarea>
+    <label>Solução aplicada</label><textarea id="cSol"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn gold" onclick="saveCase()">Salvar atendimento</button></div>
+  </div>
+  <h2>Histórico</h2>
+  <div id="caseList"></div>
+  <div class="card">
+    <h3>Backup</h3>
+    <p class="mut">Os dados ficam só neste navegador. Copie o backup de vez em quando e guarde (WhatsApp para você mesmo, e-mail ou Drive).</p>
+    <div class="row"><button class="btn lite sm" onclick="copyBackup()">Copiar backup</button><button class="btn lite sm" onclick="document.getElementById('impBox').classList.toggle('hidden')">Restaurar backup</button></div>
+    <div id="impBox" class="hidden" style="margin-top:8px"><textarea id="impTxt" placeholder="Cole aqui o texto do backup"></textarea><button class="btn sm" style="margin-top:6px" onclick="importBackup()">Restaurar</button></div>
+  </div>
+</section>
+</main>
+
+<nav>
+  <button class="on" data-v="codigos"><span>⌗</span>Códigos</button>
+  <button data-v="sintomas"><span>⚑</span>Sintomas</button>
+  <button data-v="testes"><span>⚡</span>Testes</button>
+  <button data-v="tabelas"><span>▦</span>Tabelas</button>
+  <button data-v="casos"><span>✎</span>Casos</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== FONTES ===================== */
+const SRC={
+  midea:{t:"WebArCondicionado – códigos Midea (compilado de manuais)",u:"https://webarcondicionado.com.br/codigo-erro-ar-condicionado-midea-2"},
+  lgOf:{t:"LG – Como interpretar os códigos de erro (suporte oficial)",u:"https://www.lg.com/ar/soporte/ayuda-producto/CT20084080-20155047720009"},
+  lgCH05:{t:"LG – Código CH05 (suporte oficial)",u:"https://www.lg.com/cac/soporte/ayuda-producto/CT30014140-20153412659958"},
+  samTDM:{t:"Samsung – Manual de serviço (tabela de erros E4xx/E5xx)",u:"https://manualshive.com/en/manual/samsung/tdm-plus/4019237?page=89"},
+  samE1:{t:"Samsung – Manual de serviço (E101/E201)",u:"https://manualslib.com/manual/1583103/Samsung-Rc090mhxea.html?page=18"},
+  samCF:{t:"Samsung – Códigos de erro (suporte oficial)",u:"https://www.samsung.com/tr/support/home-appliances/what-are-samsung-air-conditioner-error-codes-and-solutions"},
+  gree:{t:"WebArCondicionado – códigos Gree (cita manuais G-Max, G-Prime, SmartWind)",u:"https://www.webarcondicionado.com.br/codigo-de-erro-ar-condicionado-gree"},
+  greeSM:{t:"Gree – Service Manual FLEXX (lista de códigos)",u:"https://manualslib.com/manual/1988710/Gree-Flexx-Series.html?page=28"},
+  elx:{t:"WebArCondicionado – códigos Electrolux por linha",u:"https://www.webarcondicionado.com.br/codigo-de-erro-ar-condicionado-electrolux"},
+  agr:{t:"Agratto – Manual Split Hi-Wall (oficial, NEO/LIV Inverter)",u:"https://cdn2.centralar.com.br/centralar/mds/manuais/agratto/split/2870%20-%202871%20-%202872%20-%202874%20-%202876%20-%202877%20-%202878/Manual%20-%20Agratto%20-%20Ar%20Split.pdf"},
+  elg:{t:"WebArCondicionado – códigos Elgin (respostas a técnicos)",u:"https://webarcondicionado.com.br/codigo-erro-ar-condicionado-elgin"},
+  phi:{t:"WebArCondicionado – assistência/códigos Philco",u:"https://www.webarcondicionado.com.br/assistencia-tecnica-autorizada-philco"},
+  campo:{t:"Referência de campo – confirmar no manual de serviço do modelo",u:""}
+};
+
+/* ===================== CÓDIGOS =====================
+ m=marca, l=linha, c=código, s=significado, k=conferir, f=nível (F/C/A), src=fonte */
+const D=[];
+function add(m,l,f,src,rows){rows.forEach(r=>D.push({m,l,f,src,c:r[0],s:r[1],k:r[2]||""}))}
+
+/* ---- MIDEA / SPRINGER / CARRIER ---- */
+add("Midea/Springer/Carrier","Inverter All Easy (EH/EL/Ec/PC)","C","midea",[
+["EH00 / EH0A","Erro de EEPROM na unidade interna","Reset de energia; persistindo, placa interna."],
+["EL01","Falha de comunicação entre unidade interna e externa","Ordem L-N-S nos bornes, emenda/cabo, tensão na condensadora, LED da placa externa, fusível externo."],
+["EH02","Erro de sinal de tensão (zero crossing)","Qualidade da rede, neutro, circuito de detecção da placa interna."],
+["EH03","Ventilador do evaporador fora de controle","Turbina travada/suja, conector, motor; medir alimentação do motor."],
+["EH0b","Falha de comunicação entre display e PCB interna","Cabo e conector da placa display."],
+["EH60","Sensor ambiente (T1) aberto ou em curto","Medir resistência (≈10 kΩ a 25 °C) desconectado; conector."],
+["EH61","Sensor da serpentina do evaporador (T2) aberto ou em curto","Idem T1; conferir fixação no tubo."],
+["Ec51","Erro de EEPROM na unidade externa","Reset; persistindo, placa externa."],
+["Ec52","Sensor da serpentina do condensador (T3) aberto ou em curto","Resistência ≈10 kΩ a 25 °C; chicote."],
+["Ec53","Sensor de temperatura externa (T4) aberto ou em curto","Resistência; chicote; posição do sensor."],
+["Ec54","Sensor de descarga do compressor (TP) aberto ou em curto","Resistência (≈50 kΩ a 25 °C em muitas placas); fixação no tubo de descarga."],
+["Ec07","Ventilador do condensador fora de controle","Hélice travada, motor DC (310 V/15 V/Vsp), conector."],
+["EL0c","Detecção de fuga de refrigerante","Teste de estanqueidade, vácuo, carga por peso. Conferir também T2 mal fixado."],
+["PC00","Proteção de alta corrente no módulo inverter (IGBT/IPM)","Enrolamentos U-V-W, isolamento do compressor, teste do IPM, condensadora suja/ventilador."],
+["PC01","Proteção contra alta ou baixa tensão","Tensão da rede sob carga, neutro, barramento DC, capacitores do barramento."],
+["PC02","Proteção por alta temperatura (compressor/IPM) ou alta pressão","Troca de calor na condensadora, pasta térmica do IPM, carga em excesso, sensor TP."],
+["PC03","Proteção contra baixa pressão","Falta de fluido, restrição, EEV/capilar, válvulas de serviço abertas."],
+["PC04","Erro na placa inverter do compressor / acionamento","Teste do IPM, enrolamentos, conector U-V-W, compressor travado."],
+["PC08","Proteção contra sobrecorrente","Corrente do conjunto, condensadora, tensão baixa, compressor pesado."],
+["PC40","Erro de comunicação entre PCB externa e PCB interna (placa principal × módulo)","Cabos internos entre placas na condensadora."]
+]);
+add("Midea/Springer/Carrier","Convencional Liva / Springer (LEDs)","C","midea",[
+["E1","Erro de EEPROM na placa",""],
+["E2","Erro de sinal de tensão (zero crossing)",""],
+["E3","Ventilador do evaporador fora de controle","Rotação &lt; 300 rpm por 2 min dispara o erro."],
+["E5","Sensor ambiente (T1) aberto ou em curto","≈10 kΩ a 25 °C."],
+["E6","Sensor da serpentina do evaporador (T2) aberto ou em curto","≈10 kΩ a 25 °C."],
+["EC","Perda (fuga) de refrigerante",""]
+]);
+
+/* ---- LG ---- */
+add("LG","Split residencial / Dual Inverter","F","lgOf",[
+["CH04","Problema de drenagem (pode aparecer como FL)","Bomba de dreno, boia, mangueira obstruída."],
+["CH05 / CH53","Comunicação anormal entre unidades interna e externa","Cabo de interligação, bornes, alimentação da UE. Se surgiu em uso: desligar 5 min e religar; persistindo, medir."],
+["CH07","Modos de operação conflitantes entre unidades (multi)","Uma unidade em frio e outra em quente."],
+["CH10","Problema no ventilador da unidade interna","Turbina travada, motor BLDC, conector."],
+["CH38","Pouco refrigerante — proteção","Vazamento, válvulas de serviço, carga."],
+["CH54","Detecção de fase invertida (comum após serviço elétrico)","Sequência de fases (trifásico)."],
+["CH61","Superaquecimento (UE em refrigeração; UI em aquecimento)","Condensadora suja/obstruída, ventilador externo, recirculação de ar quente."],
+["CH66","Linha de comunicação ou tubulação trocada entre unidades (multi)","Conferir pares cabo/tubo de cada evaporadora."],
+["CH67","Problema no ventilador da unidade externa","Hélice travada, motor, conector."],
+["CH93","Comunicação; em modelos pós-2021 pode indicar UE sem energia","Alimentação independente da UE."]
+]);
+add("LG","Split inverter – códigos de serviço","A","campo",[
+["CH01","Sensor de ar ambiente da UI","Resistência do sensor desconectado."],
+["CH02","Sensor do tubo (entrada) do evaporador","Resistência; fixação."],
+["CH06","Sensor do tubo (saída) do evaporador",""],
+["CH09","EEPROM da unidade interna",""],
+["CH21","Pico de corrente DC (IPM/compressor)","Teste do IPM, enrolamentos, isolamento."],
+["CH22","Sobrecorrente na entrada (CT)","Tensão, condensadora, compressor."],
+["CH23","Baixa tensão no barramento DC","Rede sob carga, ponte retificadora, capacitores, reator."],
+["CH26","Falha de partida / posição do rotor do compressor","Enrolamentos, conector U-V-W, IPM, compressor travado."],
+["CH27","Falha no PFC/PSC","Reator, PFC, alimentação."],
+["CH29","Sobrecorrente de fase do compressor","IPM, compressor, carga em excesso."],
+["CH32","Alta temperatura de descarga","Falta de fluido, sensor de descarga."],
+["CH34 / CH35","Alta pressão / baixa pressão","Troca de calor, carga, restrição."],
+["CH41 / CH44 / CH45 / CH46","Sensores da UE: descarga / ar externo / condensadora / sucção","Resistência de cada sensor."],
+["CH60","EEPROM da unidade externa",""],
+["CH62 / CH65","Alta temperatura do dissipador / sensor do dissipador","Pasta térmica, fixação, ventilação da UE."]
+]);
+
+/* ---- SAMSUNG ---- */
+add("Samsung","Split / WindFree / Digital Inverter","C","samTDM",[
+["E101 / E102 / E201 / E202","Comunicação entre unidade interna e externa","Cabo de interligação, bornes, UE energizada. (E101 também aparece com a UE desligada há mais de 5 min.)"],
+["E416","Temperatura de descarga do compressor superaquecida","Falta de fluido, restrição, sensor de descarga."],
+["E440 / E441","Operação bloqueada por temperatura externa fora da faixa","Não é defeito: aquecimento acima de 30 °C ou refrigeração muito abaixo da faixa externa."],
+["E458","Falha do ventilador BLDC externo","Hélice, motor, conector."],
+["E461","Falha de partida do compressor","Enrolamentos, IPM, conector U-V-W, equalização de pressão."],
+["E462","Desarme por corrente total / sobrecorrente do PFC","Tensão, carga, condensadora."],
+["E464","Sobrecorrente no IPM (módulo IGBT)","Teste do IPM, compressor à massa, enrolamentos."],
+["E465","Sobrecarga do compressor","Troca de calor, carga, tensão."],
+["E471","Erro de EEPROM da unidade externa",""],
+["E474","Sensor de temperatura do IPM ou PFCM","Placa inverter externa."],
+["E484","Sobrecarga do PFC","Reator; se normal, placa inverter."],
+["E500","IPM superaquecido","Fixação no dissipador, pasta térmica, ventilação."]
+]);
+add("Samsung","Split – outros","F","samCF",[["CF","Lembrete de limpeza do filtro (não é defeito)","Limpar filtro e resetar o lembrete."]]);
+add("Samsung","Split – sensores e outros","A","campo",[
+["E121 / E122 / E123","Sensores da UI: ambiente / entrada do evaporador / saída do evaporador","Resistência dos sensores."],
+["E154","Ventilador da unidade interna","Motor, turbina, conector."],
+["E221 / E237 / E251","Sensores da UE: ar externo / condensador / descarga","Resistência dos sensores."],
+["E554","Detecção de vazamento de refrigerante","Estanqueidade e carga."]
+]);
+
+/* ---- GREE ---- */
+add("Gree","Split inverter residencial","C","gree",[
+["E1","Proteção de alta pressão","Condensadora, ventilador, serpentina, carga, restrições."],
+["E2","Proteção contra congelamento interno","Filtro, vazão de ar, evaporador, sensor, circuito."],
+["E3","Baixa pressão ou falta de fluido","Vazamentos, válvulas, tubulação, obstrução, carga."],
+["E4","Alta temperatura na descarga do compressor","Ventilação, condensador, sensor, corrente, compressor."],
+["E6","Falha de comunicação entre as unidades","Alimentação, bornes, ordem dos cabos, conectores, placas."],
+["F0","Vazamento / falta de fluido / bloqueio (SmartWind: proteção de vazamento)","Tubulação, válvulas, sensores."],
+["F1 / F2","Sensores internos: ambiente / evaporador","Conector, chicote, resistência, entrada da placa."],
+["F3 / F4 / F5","Sensores externos: ambiente / condensador / descarga","Conexões, cabos, resistência, placa externa."],
+["H1","Degelo ou retorno de óleo (estado normal em alguns modelos)","Observar duração antes de agir."],
+["H3","Sobrecarga do compressor","Tensão, corrente, troca de calor, carga, compressor."],
+["H5","Proteção do módulo IPM","Alimentação, corrente, resfriamento do módulo, compressor."],
+["H6","Falha no motor do ventilador interno (sem retorno)","Obstrução, conector, sinal de retorno do motor, placa."],
+["PU / PH / PL","Carga dos capacitores / alta / baixa tensão no barramento DC","Alimentação, reator, capacitores, placa de potência."]
+]);
+add("Gree","Split inverter – códigos de serviço","A","greeSM",[
+["E5","Proteção de sobrecorrente","Tensão, compressor, condensadora."],
+["Lc","Falha de partida do compressor","Enrolamentos, IPM, conector, equalização."],
+["Ld","Falta de fase do compressor","Conector U-V-W, cabo, IPM."],
+["LP","Incompatibilidade entre UI e UE",""],
+["U7","Falha na válvula de 4 vias",""],
+["U8","Falha no detector de passagem por zero (placa interna)",""],
+["C5","Jumper (tampa de configuração) ausente ou errado","Encaixe e modelo do jumper."],
+["EE / ee","Erro de EEPROM",""],
+["HC","Proteção do PFC",""]
+]);
+
+/* ---- ELECTROLUX / CONSUL ---- */
+add("Electrolux/Consul","Residencial UI/UE, JI/JE, YI/YE","C","elx",[
+["E0","Sensor de temperatura ambiente da UI (UI, JI, YI)",""],
+["E1","Sensor da tubulação da UI (UI, JI, YI)",""],
+["E5","Falha de comunicação entre as unidades (JI, YI)",""],
+["E7","Proteção por baixa tensão (JI, YI)",""],
+["E8","Sensor de temperatura ambiente da UE (UI, JI, YI)",""]
+]);
+add("Electrolux/Consul","Inverter VI/VE 18 e 22","C","elx",[
+["F1","Sensor de temperatura ambiente aberto ou em curto",""],
+["F2","Sensor do evaporador aberto ou em curto",""],
+["H6","Falha no motoventilador da unidade interna",""],
+["C5","Jumper da placa ausente, mal posicionado ou incompatível",""],
+["U8","Circuito de detecção de passagem por zero (placa interna)",""],
+["E5","Proteção contra sobrecarga (≠ E5 das linhas JI/YI)",""]
+]);
+add("Electrolux/Consul","Inverter – códigos 31 a 39","C","elx",[
+["31 a 39","Falhas do módulo inverter, da alimentação e do acionamento do compressor","Fonte não detalha código a código. Usar manual técnico do modelo + fluxo 'Compressor não parte'."]
+]);
+
+/* ---- AGRATTO / VIX ---- */
+add("Agratto/Vix","NEO Inverter ICS/ICST 220 V","F","agr",[
+["E1","Falha no sensor de temperatura do ambiente",""],
+["E2","Falha no sensor de temperatura da bobina da UE",""],
+["E3","Falha no sensor de temperatura da bobina da UI",""],
+["E4","Falha no feedback do motor PG da UI",""],
+["E5","Falha de comunicação UI × UE",""],
+["F0","Falha de retorno do motor DC externo",""],
+["F1","Falha no módulo IPM",""],
+["F2","Falha no módulo PFC",""],
+["F3","Falha na operação do compressor",""],
+["F4","Falha no sensor de temperatura de descarga da UE",""],
+["F5","Proteção da tampa superior do compressor",""],
+["F6","Falha no sensor de temperatura ambiente da UE",""],
+["F7","Proteção sobre/subtensão",""],
+["F8","Falha de comunicação do módulo da UE",""],
+["F9","Falha na EEPROM da UE",""],
+["FA","Falha no sensor de temperatura de sucção",""],
+["P4","Proteção de sobrecarga",""],
+["P5","Proteção de temperatura de descarga",""],
+["P6","Proteção de alta temperatura",""],
+["P7","Proteção contra congelamento",""]
+]);
+
+/* ---- ELGIN ---- */
+add("Elgin","Eco Inverter","A","elg",[
+["P1","Proteção contra alta/baixa tensão","Tensão sob carga, neutro, barramento DC."],
+["PC04","Erro de acionamento do inversor do compressor","IPM, enrolamentos, conector U-V-W."]
+]);
+
+/* ---- PHILCO ---- */
+add("Philco","Split inverter","A","phi",[
+["E8","Unidade externa não conectada / sem comunicação","Alimentação da UE e cabo de interligação."]
+]);
+
+const BRAND_NOTES={
+ "Midea/Springer/Carrier":"Cada geração de placa tem sua própria tabela. Xtreme Save Connect e AI Ecomaster têm a tabela na seção 12 do manual do usuário (\"Função Autodiagnóstico e Códigos de Erro\"). Confira lá antes de aplicar a tabela All Easy.",
+ "LG":"Os blogs divergem muito da LG (ex.: há site dizendo que CH10 é sensor; a LG oficial diz ventilador interno). Use a LG oficial e o manual de serviço.",
+ "Samsung":"Os códigos E1xx são da unidade interna e E2xx/E4xx/E5xx da externa. Alguns modelos mostram o erro só por LEDs: consulte a tabela de LEDs do manual de instalação.",
+ "Gree":"F0, H1 e C-codes mudam de sentido entre linhas (SmartWind, G-Max, G-Prime, comerciais). Confirme a linha na etiqueta.",
+ "Electrolux/Consul":"O mesmo código muda de sentido entre linhas (E1, E5, E8). As linhas VI/VE 18/22 usam padrão de códigos igual ao da Gree (F1, F2, H6, C5, U8).",
+ "Agratto/Vix":"A tabela da LIV Inverter (LCS/LCST) existe no manual oficial, mas a extração não permitiu parear código × significado com segurança. Cadastre do manual impresso.",
+ "Elgin":"O manual do usuário Eco Inverter não traz tabela de códigos. Peça o manual técnico à Elgin (SAC 0800 70 35446) ou cadastre a partir do manual da condensadora.",
+ "Philco":"Sem tabela confirmada da Philco Brasil nesta versão. Cuidado: tabelas \"Philco\" em espanhol são de outra empresa (Argentina). Cadastre a partir do manual do seu modelo.",
+ "TCL":"Sem tabela confirmada nesta versão. Cadastre a partir do manual do modelo (TAC-xxCSA1-INV etc.).",
+ "Consul":""
+};
+const BRANDS=["Todas","Midea/Springer/Carrier","LG","Samsung","Gree","Elgin","TCL","Philco","Electrolux/Consul","Agratto/Vix","Meus"];
+
+/* ===================== STORAGE ===================== */
+const KEY="nl_diag_v1";
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{codes:[],cases:[]}}catch(e){return {codes:[],cases:[]}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){toast("Não foi possível salvar neste navegador")}}
+let ST=load();
+
+/* ===================== UI CÓDIGOS ===================== */
+let curBrand="Todas";
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function renderChips(){
+  document.getElementById("brandChips").innerHTML=BRANDS.map(b=>`<button class="chip ${b===curBrand?"on":""}" onclick="setBrand('${b}')">${b}</button>`).join("");
+}
+function setBrand(b){curBrand=b;renderChips();renderCodes()}
+function allCodes(){
+  const mine=ST.codes.map(x=>({m:x.m,l:x.l,f:"U",src:null,fonte:x.fonte,c:x.c,s:x.s,k:x.k,id:x.id}));
+  return D.concat(mine);
+}
+function brandMatch(x){
+  if(curBrand==="Todas")return true;
+  if(curBrand==="Meus")return x.f==="U";
+  const a=x.m.toLowerCase(),b=curBrand.toLowerCase();
+  return a===b||b.split("/").some(p=>a.includes(p))||a.split("/").some(p=>b.includes(p));
+}
+function renderCodes(){
+  const q=document.getElementById("q").value.trim().toLowerCase();
+  const note=BRAND_NOTES[curBrand];
+  document.getElementById("brandNote").innerHTML=note?`<div class="note">${note}</div>`:"";
+  const list=allCodes().filter(x=>brandMatch(x)&&(!q||(x.c+" "+x.s+" "+x.k+" "+x.l+" "+x.m).toLowerCase().includes(q)));
+  const lab={F:"Fabricante",C:"Compilação",A:"A confirmar",U:"Meu"};
+  document.getElementById("codeList").innerHTML=list.length?list.map(x=>{
+    const s=x.src?SRC[x.src]:null;
+    const fonte=x.f==="U"?(x.fonte?`Fonte: ${esc(x.fonte)}`:"Sem fonte informada"):(s&&s.u?`<a href="${s.u}" target="_blank" rel="noopener">${esc(s.t)}</a>`:esc(s?s.t:""));
+    return `<div class="card"><span class="code">${esc(x.c)}</span><span class="badge b${x.f}">${lab[x.f]}</span>
+      <div class="line">${esc(x.m)} · ${esc(x.l)}</div>
+      <div>${x.s}</div>
+      ${x.k?`<div class="chk"><b>Conferir:</b> ${x.k}</div>`:""}
+      <div class="mut" style="margin-top:6px">${fonte}</div>
+      ${x.f==="U"?`<button class="btn lite sm" style="margin-top:6px" onclick="delCode('${x.id}')">Excluir</button>`:""}
+    </div>`}).join(""):`<div class="empty">Nenhum código encontrado para este filtro.<br>Cadastre a partir do manual do modelo (abaixo).</div>`;
+}
+function addCode(){
+  const g=id=>document.getElementById(id).value.trim();
+  if(!g("aCod")||!g("aSig")){toast("Preencha código e significado");return}
+  ST.codes.push({id:Date.now().toString(36),m:g("aMarca")||"Outra",l:g("aLinha")||"—",c:g("aCod"),s:esc(g("aSig")),k:esc(g("aChk")),fonte:g("aFonte")});
+  save();["aCod","aSig","aChk"].forEach(i=>document.getElementById(i).value="");
+  toast("Código salvo");renderCodes();
+}
+function delCode(id){ST.codes=ST.codes.filter(x=>x.id!==id);save();renderCodes()}
+
+/* ===================== FLUXOS ===================== */
+const FLOWS=[
+{t:"1. Evaporadora não liga (display apagado)",s:[
+["Medir tensão nos bornes L-N da evaporadora (ou da condensadora, conforme onde entra a alimentação).",[["der 0 V","disjuntor, tomada, cabo, emenda. Problema externo ao aparelho."],["tensão OK","seguir para a placa interna."]]],
+["Inspecionar a placa interna: fusível, varistor (estourado/escurecido), cheiro de queimado.",[["fusível aberto + varistor estourado","surto. Trocar e investigar a causa antes de religar (curto à jusante?)."],["fusível aberto sozinho","procure curto: motor da turbina, fonte, display."]]],
+["Medir a fonte de baixa tensão da placa (tipicamente 12 Vcc e 5 Vcc).",[["ausente","fonte chaveada/regulador. Desconecte cargas (motor, display) e meça de novo para isolar."],["presente","display/receptor IR ou cabo do display (Midea: EH0b)."]]],
+["Testar com o botão manual/emergência da evaporadora.",[["ligar pelo botão","controle remoto (pilhas, IR com câmera do celular)."]]]
+]},
+{t:"2. Evaporadora liga, condensadora não parte (erro de comunicação)",s:[
+["Anotar o código antes de resetar. Confirmar a ordem dos cabos: L, N, S (sinal) e terra iguais nas duas unidades.",[["N e S estiverem invertidos","corrigir. Inversão pode queimar o circuito de comunicação."]]],
+["Medir tensão L-N nos bornes da condensadora com o aparelho ligado.",[["der 0 V","cabo de interligação, emenda, borne oxidado. Em modelos com alimentação pela UE, conferir o disjuntor."],["der ≈ 220 V","seguir."]]],
+["Observar o LED da placa externa (piscando = alimentada e processando; apagado = sem fonte).",[["o LED estiver apagado","fusível da placa externa, ponte retificadora, PTC/relé de pré-carga, fonte chaveada externa."]]],
+["Medir a linha de comunicação S-N: a tensão deve oscilar (sinal pulsante). Em várias Midea/Springer, a faixa de referência citada é 0–90 VAC.",[["a tensão for fixa ou zero","isolar: desconecte o S na UE e meça o que vem da UI. Se a UI envia e a UE não responde → placa externa. Se a UI não envia → placa interna ou cabo."]]],
+["Conferir o barramento DC (ver fluxo 3). Placa externa sem barramento não comunica em várias marcas.",[]]
+]},
+{t:"3. Condensadora energiza, compressor não parte / tenta e para",s:[
+["Desligar, esperar, medir P-N do barramento até < 50 V. Só então mexer na placa.",[]],
+["Com o aparelho ligado, medir o barramento DC (P-N) com o compressor tentando partir.",[["der ≈ 0 V","ponte retificadora, reator aberto, PTC/relé de pré-carga, fusível."],["der baixo (< 250 V em rede 220 V)","rede fraca sob carga, capacitor do barramento seco, ponte."],["der ≈ 300–390 V estável","alimentação do inverter OK → seguir para IPM e compressor."]]],
+["Desconectar U-V-W do compressor e medir enrolamentos: U-V, V-W, W-U.",[["os valores forem iguais (dif. < 5%)","enrolamentos OK."],["um valor for diferente, aberto ou ~0 Ω","compressor condenado (confirmar no conector do compressor, não no cabo)."]]],
+["Megar o compressor à carcaça (500 Vcc, desconectado).",[["der < 2 MΩ (ref.)","isolamento comprometido. Atenção: compressor com fluido condensado pode dar valor baixo frio; aquecer/funcionar e repetir antes de condenar."]]],
+["Testar o IPM em escala de diodo, placa desenergizada e descarregada: P→U, P→V, P→W e U/V/W→N.",[["der 0,3–0,6 V num sentido e OL no inverso em todas as fases","diodos do IPM OK (não garante os IGBTs, mas descarta curto)."],["der ~0 V em qualquer par","IPM em curto → placa externa. Antes de trocar a placa, confirme o compressor (fluxo acima) para não queimar a nova."]]],
+["Religar o compressor e medir tensão AC entre U-V, V-W, W-U durante a tentativa de partida (multímetro True RMS).",[["as tensões estiverem equilibradas e o compressor não partir","mecânico (travado) ou pressões não equalizadas. Aguardar equalização e testar de novo."],["faltar uma fase ou houver desequilíbrio","IPM / driver da placa."]]]
+]},
+{t:"4. Liga e funciona, mas gela pouco",s:[
+["Colocar em refrigeração, temperatura mínima, ventilação alta, por 15–20 min (ou modo teste/forçado do fabricante) para o compressor estabilizar em frequência alta.",[["medir com o inverter em baixa rotação","o diagnóstico de carga sai errado."]]],
+["Medir pressão de sucção, temperatura do tubo de sucção e calcular superaquecimento; medir subresfriamento na linha de líquido.",[["der SA alto + SR baixo","falta de fluido (vazamento)."],["der SA alto + SR alto","restrição (filtro, capilar, EEV travada)."],["der SA baixo + SR alto","excesso de fluido ou baixa troca na condensadora."],["der SA baixo + SR baixo","baixa vazão de ar no evaporador (filtro, turbina, serpentina)."]]],
+["Comparar a corrente medida com a nominal da etiqueta.",[["a corrente estiver bem abaixo e o compressor em baixa","a placa está limitando frequência: confira sensores (T3/T4/TP fora da curva fazem a placa reduzir capacidade), tensão da rede e temperatura do dissipador."]]],
+["Medir os sensores (aba Tabelas) e comparar com a temperatura real do ponto.",[["o sensor estiver fora > 10–15%","substituir; ele engana a lógica da placa sem gerar erro."]]],
+["Em modelos com EEV: medir as bobinas (5 fios, 12 V) e ouvir o 'tec-tec' de reset ao ligar.",[["não houver reset ou a bobina estiver aberta","bobina/placa; corpo da válvula travado → troca."]]]
+]},
+{t:"5. Desarma disjuntor ao ligar",s:[
+["Observar quando desarma: ao energizar (antes de ligar no controle) ou na partida do compressor.",[["desarmar ao energizar","curto na entrada: varistor, ponte retificadora, IPM em curto, capacitor do barramento, cabo à massa."],["desarmar só quando o compressor parte","compressor à massa, IPM, ou disjuntor subdimensionado/curva errada."]]],
+["Megar compressor e cabos; testar ponte e IPM em escala de diodo.",[]],
+["Conferir o dimensionamento do disjuntor e do cabo no manual de instalação.",[]]
+]},
+{t:"6. Liga, funciona alguns minutos e desliga (cicla)",s:[
+["Anotar o código/LED no momento da parada.",[]],
+["Verificar troca de calor na condensadora: sujeira, recirculação de ar quente, ventilador.",[["o ventilador externo estiver parando","motor DC: medir 310 V, 15 V e Vsp no conector com o motor ligado."]]],
+["Verificar tensão da rede sob carga (queda ao partir).",[["a queda for > 10%","cabo/conexões da instalação; proteção de subtensão age corretamente."]]],
+["Medir sensor de descarga e temperatura real do tubo de descarga.",[["a descarga estiver muito quente de fato","falta de fluido / restrição."],["o sensor estiver fora da curva","troca do sensor."]]],
+["Conferir a fixação e a pasta térmica do IPM no dissipador.",[]]
+]}
+];
+function renderFlows(){
+  document.getElementById("flows").innerHTML=FLOWS.map(f=>`<details><summary>${f.t}</summary><div class="dbody"><ol class="steps">${
+    f.s.map(st=>`<li>${st[0]}${st[1].map(i=>`<span class="if"><b>Se ${i[0]}:</b> ${i[1]}</span>`).join("")}</li>`).join("")
+  }</ol></div></details>`).join("");
+}
+
+/* ===================== TESTES ===================== */
+const TESTS=[
+["IPM (módulo de potência)","Placa desenergizada e barramento descarregado. Multímetro em diodo. Ponta vermelha em N e preta em U, V, W, depois vermelha em U/V/W e preta em P. Esperado ≈ 0,3–0,6 V; no sentido inverso, OL. Qualquer leitura ~0 V = curto. Atenção: o teste vê os diodos de roda livre; um IGBT pode estar aberto sem aparecer aqui. Confirme com a tensão U-V-W equilibrada durante a partida."],
+["Barramento DC e capacitores","Medir P-N com o aparelho ligado: ≈ 300–320 Vcc em rede 220 V sem PFC ativo; ≈ 360–390 Vcc com PFC ativo. Ondulação alta (medir em AC sobre o DC) ou queda forte ao partir indica capacitor seco. Verifique estufamento e vazamento visual."],
+["Ponte retificadora","Em diodo: 4 diodos, cada um conduz ≈ 0,4–0,6 V num sentido e OL no inverso. Curto em qualquer um derruba o disjuntor ao energizar."],
+["Reator (indutor do PFC)","Desconectado: continuidade com resistência muito baixa (fração de ohm a ~1 Ω). Aberto = sem barramento. Ruído forte ou cheiro de queimado = suspeito."],
+["Compressor inverter (BLDC trifásico)","Enrolamentos U-V, V-W, W-U iguais entre si (diferença < 5%). Isolamento à carcaça com megômetro 500 Vcc, compressor desconectado. Não ligue o compressor inverter direto na rede: ele não tem bobina de partida e depende do inversor."],
+["Motor ventilador DC (BLDC, 5 fios)","Não se mede bobina (o driver é interno). Com o motor conectado e ligado, meça no conector: Vdc ≈ 310 V, Vcc ≈ 15 V, Vsp (comando) ≈ 0–6,5 V e FG (retorno pulsando). Com tensões presentes, Vsp comandado e motor parado, o problema é o motor. Se falta alguma tensão, é a placa."],
+["Termistores NTC","Desconecte da placa e meça. Compare com a aba Tabelas e com a temperatura real do ponto. Aberto (OL) ou ~0 Ω = defeito. Fora da curva sem gerar código engana a placa (gela pouco, cicla, limita frequência)."],
+["Comunicação UI × UE","Meça entre S e N com o aparelho ligado: a leitura deve oscilar. Fixa ou zero indica falha. Isole desconectando o S na UE e medindo o que chega da UI. Confira sempre a sequência L-N-S nos dois lados e emendas no cabo."],
+["Válvula de expansão eletrônica (EEV)","Bobina 12 V de 5 fios: cada fase para o comum ≈ 40–50 Ω (típico; confira o modelo). Ao energizar, deve fazer o 'tec-tec' de reset. Bobina boa e sem movimento → corpo travado."],
+["Válvula 4 vias (quente/frio)","Bobina 220 VAC: medir resistência (tipicamente na casa de kΩ) e tensão aplicada pela placa no modo aquecimento. Bobina OK, tensão OK e não reverte → corpo da válvula."],
+["Fonte chaveada / baixa tensão","Meça 12 V e 5 V (ou 15 V para drivers) em relação ao GND da placa. Ausente: desconecte cargas e meça de novo para descobrir se é a fonte ou um curto na carga."]
+];
+function renderTests(){
+  document.getElementById("tests").innerHTML=TESTS.map(t=>`<details><summary>${t[0]}</summary><div class="dbody">${t[1]}</div></details>`).join("");
+}
+
+/* ===================== NTC ===================== */
+function renderNTC(){
+  const temps=[-10,0,10,20,25,30,40,50,60,70,80,90,100];
+  const types=[[5,3470],[10,3950],[15,3950],[20,3950],[50,3950]];
+  let h="<table><tr><th>°C</th>"+types.map(t=>`<th>${t[0]}k<br><small>β${t[1]}</small></th>`).join("")+"</tr>";
+  temps.forEach(T=>{h+=`<tr><td><b>${T}</b></td>`+types.map(([R,B])=>{const v=R*Math.exp(B*(1/(T+273.15)-1/298.15));return `<td>${v>=10?v.toFixed(1):v.toFixed(2)}</td>`}).join("")+"</tr>"});
+  document.getElementById("ntc").innerHTML=h+"</table><p class='mut'>Valores em kΩ.</p>";
+}
+
+/* ===================== CASOS ===================== */
+const CF=["cCli","cMarca","cMod","cCod","cV","cDC","cA","cP","cSH","cMed","cDiag","cSol"];
+function saveCase(){
+  const o={id:Date.now().toString(36),data:new Date().toLocaleDateString("pt-BR")};
+  CF.forEach(k=>o[k]=document.getElementById(k).value.trim());
+  if(!o.cMarca&&!o.cCod&&!o.cDiag){toast("Preencha ao menos marca, código ou diagnóstico");return}
+  ST.cases.unshift(o);save();CF.forEach(k=>document.getElementById(k).value="");toast("Atendimento salvo");renderCases();
+}
+function caseText(o){
+  return `REGISTRO DE DIAGNÓSTICO – ${o.data}
+Cliente/local: ${o.cCli||"-"}
+Equipamento: ${o.cMarca||"-"} ${o.cMod||""}
+Código exibido: ${o.cCod||"-"}
+Medições: rede ${o.cV||"-"} V | barramento DC ${o.cDC||"-"} V | corrente ${o.cA||"-"} A | sucção ${o.cP||"-"} psig | SA ${o.cSH||"-"} K
+${o.cMed?"Outras medições: "+o.cMed+"\n":""}Diagnóstico: ${o.cDiag||"-"}
+Solução: ${o.cSol||"-"}
+Nelson Lopes Climatização – (88) 9 9742-3664`;
+}
+function renderCases(){
+  const el=document.getElementById("caseList");
+  el.innerHTML=ST.cases.length?ST.cases.map(o=>`<div class="card"><div class="line">${o.data} · ${esc(o.cCli||"sem cliente")}</div>
+  <div><b>${esc(o.cMarca||"")} ${esc(o.cMod||"")}</b> ${o.cCod?`<span class="code" style="font-size:14px">${esc(o.cCod)}</span>`:""}</div>
+  <div class="mut" style="margin-top:4px">${esc(o.cDiag||"")}</div>
+  <div class="row" style="margin-top:8px"><button class="btn lite sm" onclick="copyCase('${o.id}')">Copiar texto</button><button class="btn lite sm" onclick="delCase('${o.id}')">Excluir</button></div></div>`).join("")
+  :`<div class="empty">Nenhum atendimento registrado ainda.</div>`;
+}
+function copyTxt(t,msg){
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast(msg)).catch(()=>{
+    const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");toast(msg)}catch(e){toast("Não foi possível copiar")}ta.remove();
+  });
+}
+function copyCase(id){const o=ST.cases.find(x=>x.id===id);if(o)copyTxt(caseText(o),"Texto copiado")}
+function delCase(id){ST.cases=ST.cases.filter(x=>x.id!==id);save();renderCases()}
+function copyBackup(){copyTxt(JSON.stringify(ST),"Backup copiado")}
+function importBackup(){
+  try{const o=JSON.parse(document.getElementById("impTxt").value);if(!o||!Array.isArray(o.codes)||!Array.isArray(o.cases))throw 0;
+    ST=o;save();renderCodes();renderCases();toast("Backup restaurado")}catch(e){toast("Texto de backup inválido")}
+}
+
+/* ===================== NAV ===================== */
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),1800)}
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  document.querySelectorAll("main section").forEach(s=>s.classList.toggle("hidden",s.id!=="v-"+b.dataset.v));
+  window.scrollTo(0,0);
+});
+document.getElementById("q").addEventListener("input",renderCodes);
+renderChips();renderCodes();renderFlows();renderTests();renderNTC();renderCases();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+</script>
+</body>
+</html>
