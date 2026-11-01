@@ -66,7 +66,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.1 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.2 (01/11/2026)</small>
 </header>
 
 <main>
@@ -262,6 +262,7 @@ const SRC={
   agr:{t:"Agratto – Manual Split Hi-Wall (oficial, NEO/LIV Inverter)",u:"https://cdn2.centralar.com.br/centralar/mds/manuais/agratto/split/2870%20-%202871%20-%202872%20-%202874%20-%202876%20-%202877%20-%202878/Manual%20-%20Agratto%20-%20Ar%20Split.pdf"},
   elg:{t:"WebArCondicionado – códigos Elgin (respostas a técnicos)",u:"https://webarcondicionado.com.br/codigo-erro-ar-condicionado-elgin"},
   phi:{t:"WebArCondicionado – assistência/códigos Philco",u:"https://www.webarcondicionado.com.br/assistencia-tecnica-autorizada-philco"},
+  his:{t:"Manual Hisense Split – Instruções de Uso e Instalação, cód. 1036070 Rev00 (impresso, acervo Nelson)",u:""},
   campo:{t:"Referência de campo – confirmar no manual de serviço do modelo",u:""}
 };
 
@@ -434,6 +435,12 @@ add("Elgin","Eco Inverter","A","elg",[
 ["PC04","Erro de acionamento do inversor do compressor","IPM, enrolamentos, conector U-V-W."]
 ]);
 
+/* ---- HISENSE ---- */
+add("Hisense","Split inverter (manual cód. 1036070 Rev00)","F","his",[
+["FC","Lembrete de limpeza do filtro após 200 h de uso (não é defeito)","Limpar o filtro e pressionar o botão de reinicialização do filtro (opcional conforme modelo)."],
+["Compressor aceso (vermelho) + ventilador interno parado","Degelo em modo aquecimento (não é defeito)","Retorna ao normal em até 10 min."]
+]);
+
 /* ---- PHILCO ---- */
 add("Philco","Split inverter","A","phi",[
 ["E8","Unidade externa não conectada / sem comunicação","Alimentação da UE e cabo de interligação."]
@@ -448,10 +455,11 @@ const BRAND_NOTES={
  "Agratto/Vix":"A tabela da LIV Inverter (LCS/LCST) existe no manual oficial, mas a extração não permitiu parear código × significado com segurança. Cadastre do manual impresso.",
  "Elgin":"O manual do usuário Eco Inverter não traz tabela de códigos. Peça o manual técnico à Elgin (SAC 0800 70 35446) ou cadastre a partir do manual da condensadora.",
  "Philco":"Sem tabela confirmada da Philco Brasil nesta versão. Cuidado: tabelas \"Philco\" em espanhol são de outra empresa (Argentina). Cadastre a partir do manual do seu modelo.",
+ "Hisense":"O manual de uso e instalação (cód. 1036070 Rev00) não traz tabela de códigos de erro, só o lembrete FC e a tabela de problemas simples. Para códigos, é preciso o manual de serviço. Dados de tubulação e elétrica estão na aba Instalação.",
  "TCL":"Sem tabela confirmada nesta versão. Cadastre a partir do manual do modelo (TAC-xxCSA1-INV etc.).",
  "Consul":""
 };
-const BRANDS=["Todas","Midea/Springer/Carrier","LG","Samsung","Gree","Elgin","TCL","Philco","Electrolux/Consul","Agratto/Vix","Meus"];
+const BRANDS=["Todas","Midea/Springer/Carrier","LG","Samsung","Gree","Elgin","TCL","Philco","Electrolux/Consul","Agratto/Vix","Hisense","Meus"];
 
 /* ===================== STORAGE ===================== */
 const KEY="nl_diag_v1";
@@ -620,7 +628,12 @@ function importBackup(){
 
 /* ===================== INSTALAÇÃO =====================
  Fichas por modelo extraídas dos manuais (f:"F" = fabricante). Preencher a partir dos manuais enviados. */
-const INST=[];
+const INST=[
+{m:"Hisense",mod:"Split inverter 9.000–12.000",cap:"9000–12000",liq:'1/4" (6 mm)',suc:'3/8" (9,53 mm)',min:"3",max:"25",des:"10",pre:"5",add:"20",flu:"",ali:"Condensadora. Exceção: modelos marcados K* recebem alimentação pela evaporadora; K** pela evaporadora com cabo e plugue. Conferir a etiqueta.",dis:"Não informado no manual",cab:"1,0–1,5 mm² × 3 (H07RN-F)",int:"1,0–1,5 mm² × 4 (H07RN-F)",obs:'Espessura mínima da parede do tubo 0,6 mm. Modelos 12K# (maiores) usam sucção 1/2" – conferir etiqueta. Torque (manual): porca 1/4" 15–20 N·m · 3/8" 30–35 N·m · 1/2" 50–55 N·m · 5/8" 60–65 N·m.',fonte:"Manual Hisense Split cód. 1036070 Rev00 – p.13, p.15 (tubulação) e p.18 (elétrica)"},
+{m:"Hisense",mod:"Split inverter 18.000",cap:"18000",liq:'1/4" (6 mm)',suc:'1/2" (12 mm)',min:"3",max:"25",des:"15",pre:"5",add:"20",flu:"",ali:"Condensadora. Exceção: modelos marcados K* recebem alimentação pela evaporadora; K** pela evaporadora com cabo e plugue. Conferir a etiqueta.",dis:"Não informado no manual",cab:"1,5 mm² × 3 (H07RN-F); K*: 1,5/2,5 mm² × 3",int:"1,0 mm² × 4; K*: 1,5/2,5 mm² × 4",obs:'Clima tropical (T3): o manual exige 2,5 mm² × 4 para alimentação e interligação nos 14K–18K – é o caso do Cariri. Modelos 18K# usam sucção 5/8". Espessura mínima 0,6 mm. Torque (manual): porca 1/4" 15–20 N·m · 3/8" 30–35 N·m · 1/2" 50–55 N·m · 5/8" 60–65 N·m.',fonte:"Manual Hisense Split cód. 1036070 Rev00 – p.13, p.15 (tubulação) e p.18 (elétrica)"},
+{m:"Hisense",mod:"Split inverter 24.000",cap:"24000",liq:'1/4" (6 mm)',suc:'5/8" (16 mm)',min:"3",max:"25",des:"15",pre:"5",add:"30",flu:"",ali:"Condensadora. Exceção: modelos marcados K* recebem alimentação pela evaporadora; K** pela evaporadora com cabo e plugue. Conferir a etiqueta.",dis:"Não informado no manual",cab:"2,5 mm² × 3 (H07RN-F); K**: 1,5 mm² × 3",int:"1,0 mm² × 4; K**: 1,5 mm² × 4",obs:'Espessura mínima da parede do tubo 0,6 mm. Torque (manual): porca 1/4" 15–20 N·m · 3/8" 30–35 N·m · 1/2" 50–55 N·m · 5/8" 60–65 N·m.',fonte:"Manual Hisense Split cód. 1036070 Rev00 – p.13, p.15 (tubulação) e p.18 (elétrica)"},
+{m:"Hisense",mod:"Split inverter 30.000–36.000",cap:"30000–36000",liq:'3/8" (9,53 mm)',suc:'5/8" (16 mm)',min:"3",max:"25",des:"15",pre:"5",add:"40",flu:"",ali:"Condensadora. Exceção: modelos marcados K* recebem alimentação pela evaporadora; K** pela evaporadora com cabo e plugue. Conferir a etiqueta.",dis:"Não informado no manual",cab:"2,5 mm² × 3 (H07RN-F)",int:"1,0 mm² × 4 (H07RN-F)",obs:'Espessura mínima da parede do tubo 1 mm. Modelos 36K# usam sucção 3/4" (torque 70–75 N·m). Torque (manual): porca 1/4" 15–20 N·m · 3/8" 30–35 N·m · 1/2" 50–55 N·m · 5/8" 60–65 N·m.',fonte:"Manual Hisense Split cód. 1036070 Rev00 – p.13, p.15 (tubulação) e p.18 (elétrica)"}
+];
 const IF=[["iMarca","m"],["iMod","mod"],["iCap","cap"],["iLiq","liq"],["iSuc","suc"],["iMin","min"],["iMax","max"],["iDes","des"],["iPre","pre"],["iAdd","add"],["iFlu","flu"],["iAli","ali"],["iDis","dis"],["iCab","cab"],["iInt","int"],["iObs","obs"],["iFonte","fonte"]];
 let instBrand="Todas";
 function allInst(){return INST.map(x=>Object.assign({f:"F"},x)).concat(ST.inst.map(x=>Object.assign({f:"U"},x)))}
