@@ -70,7 +70,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v2.0 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v2.0.1 (01/11/2026)</small>
 </header>
 
 <main>
@@ -145,6 +145,10 @@ a{color:#1d4f9a}
     <p class="mut" style="margin:8px 0 0">Ex.: 2,6 A e 300 V → 23 µF. A tensão no capacitor fica acima da rede (é normal). Isso confere se o capacitor <i>entrega</i> o valor; para saber se o valor é o <i>certo</i> para o compressor, vale a etiqueta/folha de dados.</p>
   </div>
   <div class="card">
+    <h3>Estimativa pelo LRA (regra de campo)</h3>
+    <p class="mut" style="margin-top:0">Quando a etiqueta do compressor tem só o LRA: <b>µF ≈ (LRA ÷ 5) × 2.296 ÷ 450</b> – na prática <b>µF ≈ LRA × 1,02</b> (ex.: LRA 29,5 → 30 µF). É regra prática, não dado do fabricante: confira na folha de dados do modelo do compressor quando puder e meça a corrente depois de trocar (não pode passar do RLA).</p>
+    <div class="row"><div style="flex:1;min-width:120px"><label>LRA da etiqueta do compressor (A)</label><input id="kL" inputmode="decimal" oninput="calcLra()"></div></div>
+    <div id="kLo" class="chk" style="margin:8px 0 12px">Digite o LRA.</div>
     <h3>LRA, RLA e o que fazer quando o capacitor está fora do padrão</h3>
     <p style="margin:0;font-size:14px"><b>RLA</b> = corrente nominal de funcionamento do compressor; <b>LRA</b> = corrente de rotor bloqueado (pico na partida, ~4 a 6 × RLA). Os dois ficam na <b>etiqueta do próprio compressor</b> (dentro da condensadora). Se a etiqueta estiver apagada, anote <b>marca e modelo do compressor</b> (gravado na carcaça) e busque a folha de dados: ela traz LRA, RLA e o capacitor recomendado.<br><b>Capacitor maior que o certo:</b> corrente alta na bobina de partida, compressor esquenta, protetor térmico desarma. <b>Menor:</b> partida pesada, corrente alta na bobina de trabalho, rendimento baixo. Na dúvida, compare a corrente de funcionamento com o RLA: acima do RLA com pressões normais = suspeite do capacitor.</p>
   </div>
@@ -831,6 +835,12 @@ function renderNTC(){
   document.getElementById("ntc").innerHTML=h+"</table><p class='mut'>Valores em kΩ.</p>";
 }
 
+function calcLra(){
+  const L=parseFloat(String(document.getElementById("kL").value).replace(",","."));const o=document.getElementById("kLo");
+  if(!(L>0)){o.textContent="Digite o LRA.";return}
+  const c=L/5*2296/450;const std=[15,20,25,30,35,40,45,50,55,60,65,70,80];const s=std.reduce((a,b)=>Math.abs(b-c)<Math.abs(a-c)?b:a);
+  o.innerHTML="Estimado: <b>"+c.toFixed(1).replace(".",",")+" µF</b> → capacitor comercial mais próximo: <b>"+s+" µF</b> (370/440 VAC). RLA aproximado: "+(L/5).toFixed(1).replace(".",",")+" A.";
+}
 function calcCap(){
   const n=s=>parseFloat(String(document.getElementById(s).value).replace(",","."));
   const A=n("kA"),V=n("kV"),N=n("kN"),o=document.getElementById("kOut");
