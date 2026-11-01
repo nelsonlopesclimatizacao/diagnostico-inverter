@@ -70,7 +70,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v2.0.1 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v2.0.2 (01/11/2026)</small>
 </header>
 
 <main>
@@ -829,7 +829,7 @@ function renderTests(){
 /* ===================== NTC ===================== */
 function renderNTC(){
   const temps=[-10,0,10,20,25,30,40,50,60,70,80,90,100];
-  const types=[[5,3470],[10,3435],[10,3950],[15,3950],[20,3950],[50,3950]];
+  const types=[[5,3470],[10,3435],[10,3950],[15,3950],[20,3950],[25,3950],[50,3950]];
   let h="<table><tr><th>°C</th>"+types.map(t=>`<th>${t[0]}k<br><small>β${t[1]}</small></th>`).join("")+"</tr>";
   temps.forEach(T=>{h+=`<tr><td><b>${T}</b></td>`+types.map(([R,B])=>{const v=R*Math.exp(B*(1/(T+273.15)-1/298.15));return `<td>${v>=10?v.toFixed(1):v.toFixed(2)}</td>`}).join("")+"</tr>"});
   document.getElementById("ntc").innerHTML=h+"</table><p class='mut'>Valores em kΩ.</p>";
