@@ -17,7 +17,7 @@ header h1{margin:0;font-size:17px;letter-spacing:.2px}
 header small{color:var(--gold2);font-size:12px}
 main{padding:12px;max-width:760px;margin:0 auto}
 nav{position:fixed;bottom:0;left:0;right:0;background:var(--navy);display:flex;border-top:2px solid var(--gold);z-index:6}
-nav button{flex:1;background:none;border:0;color:#c8d3e6;padding:9px 2px 10px;font-size:12px;font-weight:600}
+nav button{flex:1;background:none;border:0;color:#c8d3e6;padding:9px 1px 10px;font-size:11px;font-weight:600}
 nav button span{display:block;font-size:18px;line-height:1.2}
 nav button.on{color:var(--gold)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
@@ -66,7 +66,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.0 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.1 (01/11/2026)</small>
 </header>
 
 <main>
@@ -135,6 +135,73 @@ a{color:#1d4f9a}
   </div>
 </section>
 
+<!-- ================= INSTALAÇÃO ================= -->
+<section id="v-instal" class="hidden">
+  <h2>Instalação – tubulação e elétrica</h2>
+  <div class="alert"><b>Os limites são do MODELO, não da marca.</b> A mesma marca muda bitola, comprimento máximo e alimentação entre linhas e capacidades. Vale sempre o manual de instalação do modelo e a etiqueta da condensadora.</div>
+  <div class="chips" id="instChips"></div>
+  <div id="instList"></div>
+  <details>
+    <summary>Referência típica por capacidade (sem manual)</summary>
+    <div class="dbody">
+      <div class="note">Valores <b>típicos de mercado</b> para split hi-wall inverter 220 V. Use só para orçamento e pré-visita. Na instalação, confirme no manual do modelo.</div>
+      <div class="scroll"><table>
+        <tr><th>Capac.</th><th>Líquido</th><th>Sucção</th><th>Compr. máx.</th><th>Desnível máx.</th></tr>
+        <tr><td>9.000</td><td>1/4"</td><td>3/8"</td><td>15–20 m</td><td>8–10 m</td></tr>
+        <tr><td>12.000</td><td>1/4"</td><td>3/8" (alguns 1/2")</td><td>15–20 m</td><td>8–10 m</td></tr>
+        <tr><td>18.000</td><td>1/4"</td><td>1/2"</td><td>20–25 m</td><td>10–15 m</td></tr>
+        <tr><td>24.000</td><td>1/4" ou 3/8"</td><td>5/8"</td><td>25–30 m</td><td>10–15 m</td></tr>
+        <tr><td>30–36.000</td><td>3/8"</td><td>5/8"</td><td>30–50 m</td><td>15–20 m</td></tr>
+      </table></div>
+      <p class="mut">Comprimento mínimo: em geral 3 m (alguns modelos aceitam 2 m). Carga de fábrica costuma cobrir 5 a 7,5 m; acima disso há carga adicional em g/m informada no manual (aumenta com o diâmetro da linha de líquido). Abaixo do mínimo: risco de retorno de líquido e ruído.</p>
+      <div class="scroll" style="margin-top:8px"><table>
+        <tr><th>Capac.</th><th>Disjuntor típico</th><th>Cabo alimentação</th></tr>
+        <tr><td>9.000</td><td>10 A</td><td>2,5 mm²</td></tr>
+        <tr><td>12.000</td><td>10–16 A</td><td>2,5 mm²</td></tr>
+        <tr><td>18.000</td><td>16–20 A</td><td>2,5 mm²</td></tr>
+        <tr><td>24.000</td><td>20–25 A</td><td>4 mm²</td></tr>
+        <tr><td>30–36.000</td><td>25–32 A</td><td>4–6 mm²</td></tr>
+      </table></div>
+      <p class="mut">Circuito exclusivo, curva C, com aterramento (NBR 5410). A bitola final depende da distância do quadro e da queda de tensão: em percursos longos, suba uma bitola. Cabo de interligação UI × UE normalmente 4 vias (L, N, S, terra) 1,5–2,5 mm² conforme manual.</p>
+    </div>
+  </details>
+  <details id="instAdd">
+    <summary>+ Cadastrar modelo do manual</summary>
+    <div class="dbody">
+      <div class="row">
+        <div style="flex:1;min-width:140px"><label>Marca</label><input id="iMarca" placeholder="Ex.: Elgin"></div>
+        <div style="flex:1;min-width:140px"><label>Modelo / linha</label><input id="iMod" placeholder="Ex.: HJFI12C2WB"></div>
+      </div>
+      <div class="row">
+        <div style="flex:1;min-width:100px"><label>Capacidade (BTU/h)</label><input id="iCap" inputmode="numeric"></div>
+        <div style="flex:1;min-width:100px"><label>Linha líquido</label><input id="iLiq" placeholder='1/4"'></div>
+        <div style="flex:1;min-width:100px"><label>Linha sucção</label><input id="iSuc" placeholder='3/8"'></div>
+      </div>
+      <div class="row">
+        <div style="flex:1;min-width:100px"><label>Compr. mín. (m)</label><input id="iMin" inputmode="decimal"></div>
+        <div style="flex:1;min-width:100px"><label>Compr. máx. (m)</label><input id="iMax" inputmode="decimal"></div>
+        <div style="flex:1;min-width:100px"><label>Desnível máx. (m)</label><input id="iDes" inputmode="decimal"></div>
+      </div>
+      <div class="row">
+        <div style="flex:1;min-width:100px"><label>Carga de fábrica até (m)</label><input id="iPre" inputmode="decimal"></div>
+        <div style="flex:1;min-width:100px"><label>Carga adicional (g/m)</label><input id="iAdd" inputmode="decimal"></div>
+        <div style="flex:1;min-width:100px"><label>Fluido</label><input id="iFlu" placeholder="R-32 / R-410A"></div>
+      </div>
+      <div class="row">
+        <div style="flex:1;min-width:140px"><label>Alimentação entra na</label><select id="iAli"><option value="">—</option><option>Evaporadora</option><option>Condensadora</option></select></div>
+        <div style="flex:1;min-width:100px"><label>Disjuntor</label><input id="iDis" placeholder="16 A curva C"></div>
+      </div>
+      <div class="row">
+        <div style="flex:1;min-width:140px"><label>Cabo alimentação</label><input id="iCab" placeholder="2,5 mm²"></div>
+        <div style="flex:1;min-width:140px"><label>Cabo interligação</label><input id="iInt" placeholder="4 vias 1,5 mm²"></div>
+      </div>
+      <label>Observações</label><textarea id="iObs" placeholder="Ex.: tensão admissível, sifão de óleo a cada X m de desnível"></textarea>
+      <label>Fonte (manual, página, revisão)</label><input id="iFonte">
+      <div class="row" style="margin-top:10px"><button class="btn gold" onclick="addInst()">Salvar modelo</button></div>
+    </div>
+  </details>
+</section>
+
 <!-- ================= CASOS ================= -->
 <section id="v-casos" class="hidden">
   <h2>Registrar atendimento</h2>
@@ -175,6 +242,7 @@ a{color:#1d4f9a}
   <button data-v="sintomas"><span>⚑</span>Sintomas</button>
   <button data-v="testes"><span>⚡</span>Testes</button>
   <button data-v="tabelas"><span>▦</span>Tabelas</button>
+  <button data-v="instal"><span>⇄</span>Instalação</button>
   <button data-v="casos"><span>✎</span>Casos</button>
 </nav>
 <div class="toast" id="toast"></div>
@@ -387,7 +455,7 @@ const BRANDS=["Todas","Midea/Springer/Carrier","LG","Samsung","Gree","Elgin","TC
 
 /* ===================== STORAGE ===================== */
 const KEY="nl_diag_v1";
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||{codes:[],cases:[]}}catch(e){return {codes:[],cases:[]}}}
+function load(){let o;try{o=JSON.parse(localStorage.getItem(KEY))}catch(e){}o=o||{};o.codes=o.codes||[];o.cases=o.cases||[];o.inst=o.inst||[];return o}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){toast("Não foi possível salvar neste navegador")}}
 let ST=load();
 
@@ -547,8 +615,45 @@ function delCase(id){ST.cases=ST.cases.filter(x=>x.id!==id);save();renderCases()
 function copyBackup(){copyTxt(JSON.stringify(ST),"Backup copiado")}
 function importBackup(){
   try{const o=JSON.parse(document.getElementById("impTxt").value);if(!o||!Array.isArray(o.codes)||!Array.isArray(o.cases))throw 0;
-    ST=o;save();renderCodes();renderCases();toast("Backup restaurado")}catch(e){toast("Texto de backup inválido")}
+    o.inst=o.inst||[];ST=o;save();renderCodes();renderCases();renderInst();toast("Backup restaurado")}catch(e){toast("Texto de backup inválido")}
 }
+
+/* ===================== INSTALAÇÃO =====================
+ Fichas por modelo extraídas dos manuais (f:"F" = fabricante). Preencher a partir dos manuais enviados. */
+const INST=[];
+const IF=[["iMarca","m"],["iMod","mod"],["iCap","cap"],["iLiq","liq"],["iSuc","suc"],["iMin","min"],["iMax","max"],["iDes","des"],["iPre","pre"],["iAdd","add"],["iFlu","flu"],["iAli","ali"],["iDis","dis"],["iCab","cab"],["iInt","int"],["iObs","obs"],["iFonte","fonte"]];
+let instBrand="Todas";
+function allInst(){return INST.map(x=>Object.assign({f:"F"},x)).concat(ST.inst.map(x=>Object.assign({f:"U"},x)))}
+function renderInst(){
+  const items=allInst();
+  const brands=["Todas"].concat([...new Set(items.map(x=>x.m))].sort());
+  if(!brands.includes(instBrand))instBrand="Todas";
+  document.getElementById("instChips").innerHTML=brands.length>1?brands.map(b=>`<button class="chip ${b===instBrand?"on":""}" onclick="instBrand='${esc(b).replace(/'/g,"")}';renderInst()">${esc(b)}</button>`).join(""):"";
+  const list=items.filter(x=>instBrand==="Todas"||x.m===instBrand).sort((a,b)=>(a.m+a.cap).localeCompare(b.m+b.cap,undefined,{numeric:true}));
+  const v=(t,u)=>t?esc(t)+(u||""):"—";
+  document.getElementById("instList").innerHTML=list.length?list.map(x=>`<div class="card">
+    <h3>${esc(x.m)} · ${v(x.cap," BTU/h")} <span class="badge b${x.f}">${x.f==="F"?"Fabricante":"Meu"}</span></h3>
+    <div class="line">${v(x.mod)}${x.flu?" · "+esc(x.flu):""}</div>
+    <div class="scroll"><table>
+      <tr><th>Líquido</th><th>Sucção</th><th>Mín.</th><th>Máx.</th><th>Desnível</th></tr>
+      <tr><td>${v(x.liq)}</td><td>${v(x.suc)}</td><td>${v(x.min," m")}</td><td>${v(x.max," m")}</td><td>${v(x.des," m")}</td></tr>
+    </table></div>
+    <div style="margin-top:6px;font-size:14px">
+      <b>Carga:</b> fábrica até ${v(x.pre," m")} · adicional ${v(x.add," g/m")}<br>
+      <b>Alimentação:</b> ${v(x.ali)} · <b>Disjuntor:</b> ${v(x.dis)}<br>
+      <b>Cabo alimentação:</b> ${v(x.cab)} · <b>Interligação:</b> ${v(x.int)}
+    </div>
+    ${x.obs?`<div class="chk">${esc(x.obs)}</div>`:""}
+    <div class="mut" style="margin-top:6px">${x.fonte?"Fonte: "+esc(x.fonte):"Sem fonte informada"}</div>
+    ${x.f==="U"?`<button class="btn lite sm" style="margin-top:6px" onclick="delInst('${x.id}')">Excluir</button>`:""}
+  </div>`).join(""):`<div class="empty">Nenhum modelo cadastrado ainda.<br>Os modelos dos seus manuais vão aparecer aqui. Enquanto isso, use a referência típica abaixo.</div>`;
+}
+function addInst(){
+  const o={id:Date.now().toString(36)};IF.forEach(([i,k])=>o[k]=document.getElementById(i).value.trim());
+  if(!o.m||!o.cap){toast("Preencha marca e capacidade");return}
+  ST.inst.push(o);save();IF.forEach(([i])=>document.getElementById(i).value="");toast("Modelo salvo");renderInst();
+}
+function delInst(id){ST.inst=ST.inst.filter(x=>x.id!==id);save();renderInst()}
 
 /* ===================== NAV ===================== */
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),1800)}
@@ -558,7 +663,7 @@ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
   window.scrollTo(0,0);
 });
 document.getElementById("q").addEventListener("input",renderCodes);
-renderChips();renderCodes();renderFlows();renderTests();renderNTC();renderCases();
+renderChips();renderCodes();renderFlows();renderTests();renderNTC();renderCases();renderInst();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 </body>
