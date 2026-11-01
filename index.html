@@ -66,7 +66,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.8.1 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.9 (01/11/2026)</small>
 </header>
 
 <main>
@@ -271,6 +271,7 @@ const SRC={
   elxMI:{t:"Electrolux – Manual de Instrução e Guia Rápido de Uso, linhas UE/JE/YE 09–24 (A23643201/B, mai/24; impresso, acervo Nelson)",u:""},
   elgHI:{t:"Elgin – Manual de Instalação Split High Wall Eco Dream Inverter (HI), R-32 – impresso, acervo Nelson (p.5, 12, 15, 25, 27, 28, 30)",u:""},
   tcl:{t:"TCL – Manual do Usuário Série T-Pro G2 (TAC-xxCTG2-INV / TAC-xxCHTG2-INV), R-32 – impresso, acervo Nelson (p.21, 27, 33, 35–37, 40, 41)",u:""},
+  agrM:{t:"Agratto – Manual Instrução de Uso e Instalação Split Hi-Wall (impresso, acervo Nelson) – p.15, 19–22, 29–30",u:""},
   campo:{t:"Referência de campo – confirmar no manual de serviço do modelo",u:""}
 };
 
@@ -445,6 +446,55 @@ add("Agratto/Vix","NEO Inverter ICS/ICST 220 V","F","agr",[
 ["P7","Proteção contra congelamento",""]
 ]);
 
+add("Agratto/Vix","LIV Inverter LCS/LCST – auto diagnóstico p.30","F","agrM",[
+["E0","Falha na comunicação entre UI e UE","Ordem dos cabos, emendas, alimentação da UE (fluxo 2)."],
+["E1","Falha no sensor de temperatura ambiente da UI",""],
+["E2","Falha no sensor de temperatura do trocador de calor da UI",""],
+["E3","Falha no sensor de temperatura do trocador de calor da UE",""],
+["E4","Sistema de refrigeração anormal","Carga, vazamento, restrição, válvulas de serviço."],
+["E5","Falha de incompatibilidade entre UI e UE","Conferir se evaporadora e condensadora são do mesmo modelo/capacidade."],
+["E6","Motor ventilador da UI com funcionamento anormal",""],
+["E7","Falha no sensor de temperatura ambiente da UE",""],
+["E8","Falha no sensor de temperatura do tubo de descarga da UE",""],
+["E9","Controle de acionamento do IPM / compressor anormal","IPM, enrolamentos, conector U-V-W (fluxo 3)."],
+["EA","Falha no circuito de teste de corrente da UE",""],
+["EB","Comunicação anormal entre a placa principal e a placa do display",""],
+["EE","Falha na EEPROM da unidade externa",""],
+["EF","Falha no motor do ventilador da UE","Hélice, motor DC, conector."],
+["EU","Falha no circuito de teste de tensão da UE",""],
+["P0","Proteção do módulo IPM","Pasta térmica, ventilação da UE, IPM, compressor."],
+["P1","Proteção contra sobretensão / subtensão","Tensão sob carga, neutro, conexões."],
+["P2","Proteção contra sobrecorrente",""],
+["P4","Proteção de alta temperatura do tubo de descarga da UE","Falta de fluido, restrição, sensor."],
+["P5","Proteção de sub-resfriamento no modo resfriamento",""],
+["P6","Proteção de superaquecimento no modo resfriamento",""],
+["P7","Proteção de superaquecimento no modo aquecimento",""],
+["P8","Proteção contra alta ou baixa temperatura (ambiente fora da faixa)",""],
+["P9","Proteção de acionamento do compressor (carga anormal)",""],
+["PA","Falha na comunicação da unidade de fluxo TOP / conflito no modo predefinido (UE)",""],
+["F0","Falha no sensor de teste do infravermelho da UI",""],
+["F1","Falha no módulo de teste de energia elétrica (UI)",""],
+["F2","Falha no sensor de temperatura da descarga (proteção)",""],
+["F3","Falha no sensor de temperatura do trocador de calor da UE (proteção)",""],
+["F4","Fluxo de gás do sistema de refrigeração anormal","Carga, restrição, válvulas."],
+["F5","Proteção PFC","Reator, PFC, tensão."],
+["F6","Falta de fase do compressor / anti-fase","Conector U-V-W, IPM."],
+["F7","Proteção de temperatura do módulo IPM",""],
+["F8","Válvula de 4 vias do sistema de reversão anormal",""],
+["F9","Falha no circuito de teste do módulo de temperatura",""],
+["FA","Falha no circuito de teste de corrente do compressor",""],
+["Fb / FC / FE / FF / FH / FP / FU / Fj / Fn","NÃO são falhas: limitação/redução de frequência por proteção (Fb sobrecarga, FC alto consumo, FE corrente do módulo, FF temperatura do módulo, FH acionamento, FP anti-condensação, FU anticongelante, Fj descarga, Fn corrente da UE)","Se aparece com frequência e o cliente reclama de pouco frio, investigue a causa: condensadora suja, tensão baixa, carga, ventilação."],
+["Fy","Proteção contra vazamento de gás","Teste de estanqueidade e carga por peso."],
+["bF / bc / bj","Falha no sensor TVOC / PM2.5 / umidade (UI)",""]
+]);
+add("Agratto/Vix","ACS/ACST/ECS/ECST – código de luz p.29","F","agrM",[
+["LED RUN aceso","Falha no sensor de temperatura ambiente",""],
+["E1 (pisca 1×)","Falha no sensor de temperatura do trocador de calor",""],
+["E2 (pisca 2×)","Mau funcionamento do motor ventilador da unidade interna",""],
+["E4 (pisca 4×)","Falta de fluido refrigerante, ou defeito na condensadora, compressor ou motor ventilador","Medir carga/pressões, compressor, ventilador externo."],
+["E6 (pisca 6×)","Falha no reconhecimento do auto diagnóstico; persistindo, motor ventilador da UI","Desligar no disjuntor, apertar o botão AUTO algumas vezes."]
+]);
+
 /* ---- ELGIN ---- */
 add("Elgin","Eco Inverter","A","elg",[
 ["P1","Proteção contra alta/baixa tensão","Tensão sob carga, neutro, barramento DC."],
@@ -514,7 +564,7 @@ const BRAND_NOTES={
  "Samsung":"Os códigos E1xx são da unidade interna e E2xx/E4xx/E5xx da externa. Alguns modelos mostram o erro só por LEDs: consulte a tabela de LEDs do manual de instalação.",
  "Gree":"F0, H1 e C-codes mudam de sentido entre linhas (SmartWind, G-Max, G-Prime, comerciais). Confirme a linha na etiqueta.",
  "Electrolux/Consul":"O mesmo código muda de sentido entre linhas (E1, E5, E8). As linhas VI/VE 18/22 usam padrão de códigos igual ao da Gree (F1, F2, H6, C5, U8). Linhas UE/JE/YE (R-32): manual do usuário não traz tabela de códigos. <b>Garantia:</b> 3 anos o conjunto e 10 anos o compressor; a garantia de 10 anos é perdida se o sistema frigorífico for modificado por terceiro com procedimento não homologado pela Electrolux — em aparelho na garantia, oriente o cliente a acionar a autorizada.",
- "Agratto/Vix":"A tabela da LIV Inverter (LCS/LCST) existe no manual oficial, mas a extração não permitiu parear código × significado com segurança. Cadastre do manual impresso.",
+ "Agratto/Vix":"Identifique a linha pela etiqueta: <b>ICS/ICST</b> (NEO), <b>LCS/LCST</b> (LIV) e <b>ACS/ECS</b> têm tabelas DIFERENTES – o mesmo código muda de sentido (ex.: E5 = comunicação na NEO, incompatibilidade UI×UE na LIV). Na LIV, códigos Fb, FC, FE, FF, FH, FP, FU, Fj e Fn são redução de frequência por proteção, não defeito. <b>Garantia:</b> 90 dias legais + 9 meses (12 no total) só se instalado por assistente técnico credenciado Agratto, comprovado por nota fiscal.",
  "Elgin":"<b>Eco Dream Inverter (HI):</b> tabela de auto diagnóstico completa (33 códigos) do manual de instalação, p.29. Garantia Elgin: instalação por empresa credenciada com o CTI preenchido; fora disso a garantia cai para 90 dias, e a manutenção preventiva é obrigatória. Eco Inverter: o manual do usuário não traz tabela de códigos. Peça o manual técnico à Elgin (SAC 0800 70 35446) ou cadastre a partir do manual da condensadora.",
  "Philco":"Sem tabela confirmada da Philco Brasil nesta versão. Cuidado: tabelas \"Philco\" em espanhol são de outra empresa (Argentina). Cadastre a partir do manual do seu modelo.",
  "Hisense":"O manual de uso e instalação (cód. 1036070 Rev00) não traz tabela de códigos de erro, só o lembrete FC e a tabela de problemas simples. Para códigos, é preciso o manual de serviço. Dados de tubulação e elétrica estão na aba Instalação.",
@@ -691,6 +741,11 @@ function importBackup(){
 /* ===================== INSTALAÇÃO =====================
  Fichas por modelo extraídas dos manuais (f:"F" = fabricante). Preencher a partir dos manuais enviados. */
 const INST=[
+{m:"Agratto/Vix",mod:"Split Hi-Wall Agratto 9.000 (ACS/ECS/ICS/LCS)",cap:"9000",liq:"Ver etiqueta",suc:"Ver etiqueta",min:"2",max:"15",des:"5",pre:"3",add:"20",flu:"",ali:"Conforme diagrama do modelo (p.21–22)",dis:"10 A",cab:"3 × 1,5 mm² (frio) / 5 × 1,5 mm² (Q/F)",int:"Conforme diagrama (até 10 m)",obs:"Corrente máx. p/ dimensionar: 5,5 A. Bitolas da tubulação: não constam neste manual – conferir etiqueta/manual do modelo. Cabos válidos até 10 m de interligação (máx. 15 m). Alimentação: conforme diagrama do modelo (p.21–22) – ACS/ECS e LCS 18–30 recebem o ponto de força na condensadora; ICS/ICST e LCST 9–12 interligam L · N · S · terra; cada extremidade com fio-terra 100 mm mais longo.",fonte:"Manual Agratto Split Hi-Wall – p.15 (comprimentos, desnível, carga), p.19 (elétrica), p.20–22 (interligação)"},
+{m:"Agratto/Vix",mod:"Split Hi-Wall Agratto 12.000 (ACS/ECS/ICS/LCS)",cap:"12000",liq:"Ver etiqueta",suc:"Ver etiqueta",min:"2",max:"15",des:"5",pre:"3",add:"20",flu:"",ali:"Conforme diagrama do modelo (p.21–22)",dis:"16 A",cab:"3 × 1,5 mm² (frio) / 5 × 1,5 mm² (Q/F)",int:"Conforme diagrama (até 10 m)",obs:"Corrente máx. p/ dimensionar: 8,2 A. Bitolas da tubulação: não constam neste manual – conferir etiqueta/manual do modelo. Cabos válidos até 10 m de interligação (máx. 15 m). Alimentação: conforme diagrama do modelo (p.21–22) – ACS/ECS e LCS 18–30 recebem o ponto de força na condensadora; ICS/ICST e LCST 9–12 interligam L · N · S · terra; cada extremidade com fio-terra 100 mm mais longo.",fonte:"Manual Agratto Split Hi-Wall – p.15 (comprimentos, desnível, carga), p.19 (elétrica), p.20–22 (interligação)"},
+{m:"Agratto/Vix",mod:"Split Hi-Wall Agratto 18.000 (ACS/ECS/ICS/LCS)",cap:"18000",liq:"Ver etiqueta",suc:"Ver etiqueta",min:"2",max:"15",des:"5",pre:"3",add:"30",flu:"",ali:"Conforme diagrama do modelo (p.21–22)",dis:"16 A",cab:"3 × 1,5 mm² (frio) / 5 × 1,5 mm² (Q/F)",int:"Conforme diagrama (até 10 m)",obs:"Corrente máx. p/ dimensionar: 12 A. Bitolas da tubulação: não constam neste manual – conferir etiqueta/manual do modelo. Cabos válidos até 10 m de interligação (máx. 15 m). Alimentação: conforme diagrama do modelo (p.21–22) – ACS/ECS e LCS 18–30 recebem o ponto de força na condensadora; ICS/ICST e LCST 9–12 interligam L · N · S · terra; cada extremidade com fio-terra 100 mm mais longo.",fonte:"Manual Agratto Split Hi-Wall – p.15 (comprimentos, desnível, carga), p.19 (elétrica), p.20–22 (interligação)"},
+{m:"Agratto/Vix",mod:"Split Hi-Wall Agratto 22.000 / 24.000 (ACS/ECS/ICS/LCS)",cap:"22000–24000",liq:"Ver etiqueta",suc:"Ver etiqueta",min:"2",max:"15",des:"8",pre:"3",add:"30",flu:"",ali:"Conforme diagrama do modelo (p.21–22)",dis:"16 A",cab:"3 × 2,5 mm² (frio) / 5 × 2,5 mm² (Q/F)",int:"Conforme diagrama (até 10 m)",obs:"Corrente máx. p/ dimensionar: 14 A. Bitolas da tubulação: não constam neste manual – conferir etiqueta/manual do modelo. Cabos válidos até 10 m de interligação (máx. 15 m). Alimentação: conforme diagrama do modelo (p.21–22) – ACS/ECS e LCS 18–30 recebem o ponto de força na condensadora; ICS/ICST e LCST 9–12 interligam L · N · S · terra; cada extremidade com fio-terra 100 mm mais longo.",fonte:"Manual Agratto Split Hi-Wall – p.15 (comprimentos, desnível, carga), p.19 (elétrica), p.20–22 (interligação)"},
+{m:"Agratto/Vix",mod:"Split Hi-Wall Agratto 30.000 (ACS/ECS/ICS/LCS)",cap:"30000",liq:"Ver etiqueta",suc:"Ver etiqueta",min:"2",max:"15",des:"8",pre:"3",add:"30",flu:"",ali:"Conforme diagrama do modelo (p.21–22)",dis:"25 A",cab:"3 × 2,5 mm² (frio) / 5 × 2,5 mm² (Q/F)",int:"Conforme diagrama (até 10 m)",obs:"Corrente máx. p/ dimensionar: 18 A. Bitolas da tubulação: não constam neste manual – conferir etiqueta/manual do modelo. Cabos válidos até 10 m de interligação (máx. 15 m). Alimentação: conforme diagrama do modelo (p.21–22) – ACS/ECS e LCS 18–30 recebem o ponto de força na condensadora; ICS/ICST e LCST 9–12 interligam L · N · S · terra; cada extremidade com fio-terra 100 mm mais longo.",fonte:"Manual Agratto Split Hi-Wall – p.15 (comprimentos, desnível, carga), p.19 (elétrica), p.20–22 (interligação)"},
 {m:"TCL",mod:"TAC-09CTG2-INV / TAC-09CHTG2-INV",cap:"9000",liq:'1/4" (6,35 mm)',suc:'3/8" (9,52 mm)',min:"2",max:"15",des:"10",pre:"3",add:"15",flu:"R-32",ali:"Condensadora (unidade externa)",dis:"10 A (frio e quente-frio)",cab:"1,5 mm² (N, L, terra)",int:"4 × 1,0 mm² (1, N, L, terra)",obs:"Carga de fábrica 400 g (frio) / 500 g (quente-frio). Alimentação 220 V (198–242 V, 60 Hz) entra na CONDENSADORA; interligação 1 · N · L · terra (bornes identificados nos dois lados). Torques: porca 1/4\" 18–20 N·m, 3/8\" 30–35, 1/2\" 45–50, 5/8\" 60–65; tampa da junta de inspeção 7–9; tampa da válvula 25–30 N·m. Evaporadora abaixo da condensadora: sifão na sucção a cada 3 m. Menos de 2 m: fazer loops nas duas linhas.",fonte:"Manual do Usuário TCL T-Pro G2 – p.35 (tubulação, carga, torques), p.36–37 (cabos, bornes, tensão), p.41–42 (disjuntor, carga de fábrica, pressões)"},
 {m:"TCL",mod:"TAC-12CTG2-INV / TAC-12CHTG2-INV",cap:"12000",liq:'1/4" (6,35 mm)',suc:'3/8" (9,52 mm)',min:"2",max:"15",des:"10",pre:"3",add:"15",flu:"R-32",ali:"Condensadora (unidade externa)",dis:"10 A (frio e quente-frio)",cab:"1,5 mm² (N, L, terra)",int:"4 × 1,0 mm² (1, N, L, terra)",obs:"Carga de fábrica 400 g (frio) / 500 g (quente-frio). Alimentação 220 V (198–242 V, 60 Hz) entra na CONDENSADORA; interligação 1 · N · L · terra (bornes identificados nos dois lados). Torques: porca 1/4\" 18–20 N·m, 3/8\" 30–35, 1/2\" 45–50, 5/8\" 60–65; tampa da junta de inspeção 7–9; tampa da válvula 25–30 N·m. Evaporadora abaixo da condensadora: sifão na sucção a cada 3 m. Menos de 2 m: fazer loops nas duas linhas.",fonte:"Manual do Usuário TCL T-Pro G2 – p.35 (tubulação, carga, torques), p.36–37 (cabos, bornes, tensão), p.41–42 (disjuntor, carga de fábrica, pressões)"},
 {m:"TCL",mod:"TAC-18CTG2-INV (só frio)",cap:"18000",liq:'1/4" (6,35 mm)',suc:'1/2" (12,7 mm)',min:"2",max:"15",des:"10",pre:"3",add:"25",flu:"R-32",ali:"Condensadora (unidade externa)",dis:"16 A",cab:"1,5 mm² (N, L, terra)",int:"4 × 1,0 mm² (1, N, L, terra)",obs:"Carga de fábrica 480 g. ATENÇÃO: o 18 quente-frio (CHTG2) usa sucção 3/8\" – ficha separada. Alimentação 220 V (198–242 V, 60 Hz) entra na CONDENSADORA; interligação 1 · N · L · terra (bornes identificados nos dois lados). Torques: porca 1/4\" 18–20 N·m, 3/8\" 30–35, 1/2\" 45–50, 5/8\" 60–65; tampa da junta de inspeção 7–9; tampa da válvula 25–30 N·m. Evaporadora abaixo da condensadora: sifão na sucção a cada 3 m. Menos de 2 m: fazer loops nas duas linhas.",fonte:"Manual do Usuário TCL T-Pro G2 – p.35 (tubulação, carga, torques), p.36–37 (cabos, bornes, tensão), p.41–42 (disjuntor, carga de fábrica, pressões)"},
