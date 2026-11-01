@@ -70,7 +70,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.17 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.17.1 (01/11/2026)</small>
 </header>
 
 <main>
@@ -748,6 +748,7 @@ const TESTS=[
 ["Comunicação UI × UE","Meça entre S e N com o aparelho ligado: a leitura deve oscilar. Fixa ou zero indica falha. Isole desconectando o S na UE e medindo o que chega da UI. Confira sempre a sequência L-N-S nos dois lados e emendas no cabo."],
 ["Válvula de expansão eletrônica (EEV)","Bobina 12 V de 5 fios: cada fase para o comum ≈ 40–50 Ω (típico; confira o modelo). Ao energizar, deve fazer o 'tec-tec' de reset. Bobina boa e sem movimento → corpo travado."],
 ["Válvula 4 vias (quente/frio)","Bobina 220 VAC: medir resistência (tipicamente na casa de kΩ) e tensão aplicada pela placa no modo aquecimento. Bobina OK, tensão OK e não reverte → corpo da válvula."],
+["Capacitor permanente (aparelhos ON/OFF e motor ventilador AC)","<b>Split inverter não usa capacitor no compressor</b> (compressor BLDC acionado pelo IPM) – só alguns motores de ventilador AC da condensadora (ex.: Springer 38TV) usam capacitor pequeno. <b>Escolha pelo valor gravado no capacitor original ou no diagrama elétrico da unidade, nunca por tabela de BTU</b>: aparelhos da mesma capacidade usam valores diferentes. Tolerância aceitável: ±5% (alguns ±6%) do valor nominal; acima de 10% de queda, trocar. Tensão do substituto igual ou maior (370 VAC → pode 440 VAC; nunca o contrário). Capacitor duplo: C = comum, HERM = compressor, FAN = ventilador. Medir com capacímetro, componente desconectado e DESCARREGADO (resistor). Sinais de defeito: estufado, vazando óleo, compressor tenta partir e desarma no protetor térmico (on/off), ventilador gira fraco ou só com empurrão. Valores típicos de campo – motor ventilador: 1,5 a 6 µF; compressor on/off 9–30k: varia de ~20 a 60 µF conforme o fabricante (confirmar na etiqueta)."],
 ["Fonte chaveada / baixa tensão","Meça 12 V e 5 V (ou 15 V para drivers) em relação ao GND da placa. Ausente: desconecte cargas e meça de novo para descobrir se é a fonte ou um curto na carga."]
 ];
 function renderTests(){
