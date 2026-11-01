@@ -70,7 +70,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.17.1 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.18 (01/11/2026)</small>
 </header>
 
 <main>
@@ -121,6 +121,33 @@ a{color:#1d4f9a}
   <div class="note">Curva teórica (modelo β). Serve para identificar sensor <b>aberto, em curto ou muito fora</b> (&gt;10–15%). Para ajuste fino, use a tabela do manual do modelo. Meça com o sensor <b>desconectado</b> da placa e compare com a temperatura real do ponto (termômetro).</div>
   <div class="scroll" id="ntc"></div>
   <p class="mut">Referências comuns: Midea/Springer T1, T2, T3, T4 ≈ 10 kΩ a 25 °C e sensor de descarga (TP) ≈ 50 kΩ a 25 °C. Gree, LG, Samsung e outras variam (5, 10, 15, 20 ou 50 kΩ). Confirme o valor nominal no manual ou na etiqueta do sensor.</p>
+
+  <h2 style="margin-top:16px">Capacitores – aparelhos ON/OFF</h2>
+  <div class="alert"><b>Referência orientativa, não substitui a etiqueta.</b> O valor correto é o do <b>compressor</b> (etiqueta do compressor, diagrama na tampa ou folha de dados pelo modelo do compressor). Use a faixa abaixo só para desconfiar de capacitor trocado fora do padrão. Split inverter não usa capacitor no compressor.</div>
+  <div class="card scroll"><table>
+    <tr><th>Capacidade</th><th>Compressor rotativo 220 V (µF)</th><th>Ventilador condensadora (µF)</th><th>Ventilador evaporadora AC (µF)</th></tr>
+    <tr><td>7–9k</td><td>20–30</td><td>1,5–3</td><td>1–2</td></tr>
+    <tr><td>12k</td><td>25–35</td><td>2–3</td><td>1–2,5</td></tr>
+    <tr><td>18k</td><td>35–45</td><td>2,5–4</td><td>1,5–3</td></tr>
+    <tr><td>22–24k</td><td>40–55</td><td>3–5</td><td>2–3</td></tr>
+    <tr><td>30k</td><td>45–60</td><td>4–6</td><td>2–4</td></tr>
+  </table>
+  <p class="mut" style="margin:6px 0 0">Faixas típicas de campo (compressores rotativos GMCC, Highly, LG, Rechi, Toshiba em 220 V/60 Hz); variam por fabricante. Tensão: 370 ou 440 VAC (pode subir, nunca descer). Tolerância ±5%.</p></div>
+  <div class="card">
+    <h3>Conferir o capacitor em funcionamento (sem tirar do circuito)</h3>
+    <p class="mut" style="margin-top:0">Com o compressor rodando, meça a <b>corrente no fio do capacitor</b> (bobina de partida, borne S/HERM) com alicate amperímetro e a <b>tensão entre os dois terminais do capacitor</b>. Fórmula (60 Hz): <b>µF = 2653 × A ÷ V</b>.</p>
+    <div class="row">
+      <div style="flex:1;min-width:110px"><label>Corrente no capacitor (A)</label><input id="kA" inputmode="decimal" oninput="calcCap()"></div>
+      <div style="flex:1;min-width:110px"><label>Tensão no capacitor (V)</label><input id="kV" inputmode="decimal" oninput="calcCap()"></div>
+      <div style="flex:1;min-width:110px"><label>Nominal gravado (µF)</label><input id="kN" inputmode="decimal" oninput="calcCap()"></div>
+    </div>
+    <div id="kOut" class="chk" style="margin-top:8px">Preencha corrente e tensão.</div>
+    <p class="mut" style="margin:8px 0 0">Ex.: 2,6 A e 300 V → 23 µF. A tensão no capacitor fica acima da rede (é normal). Isso confere se o capacitor <i>entrega</i> o valor; para saber se o valor é o <i>certo</i> para o compressor, vale a etiqueta/folha de dados.</p>
+  </div>
+  <div class="card">
+    <h3>LRA, RLA e o que fazer quando o capacitor está fora do padrão</h3>
+    <p style="margin:0;font-size:14px"><b>RLA</b> = corrente nominal de funcionamento do compressor; <b>LRA</b> = corrente de rotor bloqueado (pico na partida, ~4 a 6 × RLA). Os dois ficam na <b>etiqueta do próprio compressor</b> (dentro da condensadora). Se a etiqueta estiver apagada, anote <b>marca e modelo do compressor</b> (gravado na carcaça) e busque a folha de dados: ela traz LRA, RLA e o capacitor recomendado.<br><b>Capacitor maior que o certo:</b> corrente alta na bobina de partida, compressor esquenta, protetor térmico desarma. <b>Menor:</b> partida pesada, corrente alta na bobina de trabalho, rendimento baixo. Na dúvida, compare a corrente de funcionamento com o RLA: acima do RLA com pressões normais = suspeite do capacitor.</p>
+  </div>
 
   <h2 style="margin-top:16px">Pressão × temperatura de saturação – R-32</h2>
   <div class="note">Pressão manométrica (relativa) de saturação. Uso: leia a pressão no manifold, ache a temperatura de saturação e calcule <b>superaquecimento = T tubo de sucção − T saturação</b> e <b>subresfriamento = T saturação (alta) − T linha de líquido</b>. Fonte: Manual de Instalação Elgin Eco Dream Inverter (HI), p.25.</div>
@@ -758,12 +785,20 @@ function renderTests(){
 /* ===================== NTC ===================== */
 function renderNTC(){
   const temps=[-10,0,10,20,25,30,40,50,60,70,80,90,100];
-  const types=[[5,3470],[10,3950],[15,3950],[20,3950],[50,3950]];
+  const types=[[5,3470],[10,3435],[10,3950],[15,3950],[20,3950],[50,3950]];
   let h="<table><tr><th>°C</th>"+types.map(t=>`<th>${t[0]}k<br><small>β${t[1]}</small></th>`).join("")+"</tr>";
   temps.forEach(T=>{h+=`<tr><td><b>${T}</b></td>`+types.map(([R,B])=>{const v=R*Math.exp(B*(1/(T+273.15)-1/298.15));return `<td>${v>=10?v.toFixed(1):v.toFixed(2)}</td>`}).join("")+"</tr>"});
   document.getElementById("ntc").innerHTML=h+"</table><p class='mut'>Valores em kΩ.</p>";
 }
 
+function calcCap(){
+  const n=s=>parseFloat(String(document.getElementById(s).value).replace(",","."));
+  const A=n("kA"),V=n("kV"),N=n("kN"),o=document.getElementById("kOut");
+  if(!(A>0&&V>0)){o.textContent="Preencha corrente e tensão.";return}
+  const c=2653*A/V;let t="Capacitância real ≈ <b>"+c.toFixed(1).replace(".",",")+" µF</b>.";
+  if(N>0){const d=(c-N)/N*100;t+=" Diferença: "+(d>0?"+":"")+d.toFixed(0)+"% do nominal → "+(Math.abs(d)<=5?"<b style='color:#1e7b46'>OK</b>":Math.abs(d)<=10?"<b style='color:#b26b00'>no limite, acompanhar</b>":"<b style='color:#b3261e'>fora – trocar</b>")+"."}
+  o.innerHTML=t;
+}
 /* ===================== CASOS ===================== */
 const CF=["cCli","cMarca","cMod","cCod","cV","cDC","cA","cP","cSH","cMed","cDiag","cSol"];
 function saveCase(){
