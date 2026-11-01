@@ -61,12 +61,16 @@ a{color:#1d4f9a}
 .empty{text-align:center;color:var(--mut);padding:20px 8px}
 .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:9px 16px;border-radius:20px;font-size:14px;z-index:9;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+.qt td,.qt th{font-size:12.5px;padding:6px 4px;vertical-align:top}
+.qt td:first-child{text-align:left;font-weight:700;color:var(--navy)}
+.qt .bt{text-align:left;white-space:nowrap}
+.qk{font-weight:700}.qk.ev{color:#b3261e}.qk.cd{color:#1e7b46}
 </style>
 </head>
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.15.4 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.16 (01/11/2026)</small>
 </header>
 
 <main>
@@ -144,6 +148,7 @@ a{color:#1d4f9a}
   <h2>Instalação – tubulação e elétrica</h2>
   <div class="alert"><b>Os limites são do MODELO, não da marca.</b> A mesma marca muda bitola, comprimento máximo e alimentação entre linhas e capacidades. Vale sempre o manual de instalação do modelo e a etiqueta da condensadora.</div>
   <div class="chips" id="instChips"></div>
+  <div class="card" id="quickBox"><h3>⚡ Resumo rápido de campo</h3><div class="scroll" id="quick"></div><p class="mut" style="margin:6px 0 0">Bitolas = líquido × sucção por capacidade. Teto = folga mínima da evaporadora até o forro/teto. <span class="qk ev">Evaporadora</span> / <span class="qk cd">Condensadora</span> = onde entra a alimentação. “—” = o manual não informa. Sempre confira o código da etiqueta.</p></div>
   <div id="instNote"></div>
   <div id="instList"></div>
   <details>
@@ -861,6 +866,33 @@ const INST_NOTES={
  "Agratto":`<b>Agratto Split Hi-Wall:</b> evaporadora com 150 mm nas laterais, 100 mm até o teto e 2,3 m do piso; furo de parede Ø 60–80 mm inclinado 5–10° para fora. Tubulação: padrão 3 m, máximo 15 m, mínimo 2 m; desnível 5 m (9/12/18k) e 8 m (22/24/30k); acima de 3 m adicionar 20 g/m (9–12k) ou 30 g/m (18–30k). Nos modelos on/off, conferir carga por superaquecimento. <span class="mut">Fonte: Manual Agratto Split Hi-Wall, p.15.</span>`,
  "Hisense":`<b>Bornes da evaporadora (modelos com cabo plugue, p.17):</b> 3(S) sinal · 2(L) fase – marrom · 1(N) neutro – azul · ⏚ terra – amarelo/verde. Mesma numeração nos dois lados; confira o diagrama colado na tampa da condensadora.<br><b>Isolamento térmico:</b> espuma de polietileno com espessura mínima de 6 mm, juntas fechadas com fita vinil. Dreno sempre inclinado para baixo, sem curva para cima nem ponta mergulhada em água; se a tubulação passar pela própria evaporadora, isolar dreno e tubos juntos. <span class="mut">Fonte: Manual Hisense cód. 1036070 Rev00, p.16–17.</span>`
 };
+/* Resumo rápido: dados por linha (bitolas são lidas das fichas INST) */
+const QUICK=[
+ {m:"Elgin",l:"Eco Dream Inverter (HI)",re:/Eco Dream/,min:"2 m",ali:"cd",teto:"150 mm",piso:"2,3–2,7 m"},
+ {m:"Electrolux/Consul",l:"YI/YE 09–24 (R-32)",re:/YI\/YE/,min:"2 m",ali:"cd/ev",teto:"—",piso:"—"},
+ {m:"Hisense",l:"Split inverter",re:/./,min:"3 m",ali:"cd*",teto:"—",piso:"—"},
+ {m:"LG",l:"Dual Inverter R-32",re:/./,min:"3 m",ali:"cd",teto:"120 mm",piso:"2,3 m"},
+ {m:"Midea/Springer/Carrier",l:"Springer Midea 42AFV/38TV",re:/42AFV/,min:"2 m",ali:"cd",teto:"150 mm",piso:"2,3 m"},
+ {m:"Philco",l:"PAC…FI/QI (inverter)",re:/FI \//,min:"2 m",ali:"ev",teto:"—",piso:"—"},
+ {m:"Philco",l:"PAC…FB/QB",re:/FB \//,min:"2 m",ali:"ev",teto:"—",piso:"—"},
+ {m:"TCL",l:"T-Pro G2",re:/./,min:"2 m",ali:"cd",teto:"150 mm",piso:"~2,5 m"},
+ {m:"Agratto",l:"Split Hi-Wall",re:/./,min:"2 m",ali:"diagrama",teto:"100 mm",piso:"2,3 m"},
+ {m:"Vix",l:"Split High Wall Inverter",re:/./,min:"— (use 3 m)",ali:"cd*",teto:"—",piso:"—"},
+ {m:"CaceAir",l:"CACE02 (sem dados)",re:/^$/,min:"—",ali:"—",teto:"—",piso:"—"}
+];
+function shortIn(s){const m=String(s||"").match(/(1\/4|3\/8|1\/2|5\/8|3\/4)/);return m?m[1]:"?"}
+function shortCap(c){return String(c).split(/[–-]/).map(x=>String(Math.round(parseInt(x)/1000))).join("/")+"k"}
+function renderQuick(){
+  const ALI={cd:'<span class="qk cd">Cond.</span>',ev:'<span class="qk ev">Evap.</span>',"cd/ev":'<span class="qk cd">Cond.</span>/<span class="qk ev">Evap.</span>',"cd*":'<span class="qk cd">Cond.</span>*',diagrama:"Diagrama","—":"—"};
+  const rows=QUICK.filter(q=>instBrand==="Todas"||q.m===instBrand);
+  if(!rows.length){document.getElementById("quickBox").classList.add("hidden");return}
+  document.getElementById("quickBox").classList.remove("hidden");
+  const seen={};
+  document.getElementById("quick").innerHTML='<table class="qt"><tr><th>Linha</th><th>Bitolas (líq × sucção)</th><th>Mín.</th><th>Alim.</th><th>Teto</th><th>Piso</th></tr>'+rows.map(q=>{
+    const fs=INST.filter(x=>x.m===q.m&&q.re.test(x.mod)).sort((a,b)=>parseInt(a.cap)-parseInt(b.cap));
+    const bt=fs.map(x=>{const tag=/só frio/.test(x.mod)?" (F)":/\(quente-frio\)/.test(x.mod)?" (Q/F)":"";const b=shortIn(x.liq)==="?"?"ver etiqueta":shortIn(x.liq)+"×"+shortIn(x.suc);return shortCap(x.cap)+tag+" "+b}).filter(k=>!seen[q.l+k]&&(seen[q.l+k]=1)).join("<br>")||"—";
+    return `<tr><td>${esc(q.m.split("/")[0])}<br><span class="mut" style="font-weight:400">${esc(q.l)}</span></td><td class="bt">${bt}</td><td>${q.min}</td><td>${ALI[q.ali]||q.ali}</td><td>${q.teto}</td><td>${q.piso}</td></tr>`}).join("")+'</table><p class="mut" style="margin:4px 0 0">* Hisense/Vix: modelos K* recebem alimentação pela evaporadora.</p>';
+}
 let instBrand="Todas";
 function allInst(){return INST.map(x=>Object.assign({f:"F"},x)).concat(ST.inst.map(x=>Object.assign({f:"U"},x)))}
 function renderInst(){
@@ -868,6 +900,7 @@ function renderInst(){
   const brands=["Todas"].concat([...new Set(items.map(x=>x.m).concat(Object.keys(INST_NOTES)))].sort());
   if(!brands.includes(instBrand))instBrand="Todas";
   document.getElementById("instChips").innerHTML=brands.length>1?brands.map(b=>`<button class="chip ${b===instBrand?"on":""}" onclick="instBrand='${esc(b).replace(/'/g,"")}';renderInst()">${esc(b)}</button>`).join(""):"";
+  renderQuick();
   document.getElementById("instNote").innerHTML=INST_NOTES[instBrand]?`<div class="note">${INST_NOTES[instBrand]}</div>`:"";
   const list=items.filter(x=>instBrand==="Todas"||x.m===instBrand).sort((a,b)=>(a.m+a.cap).localeCompare(b.m+b.cap,undefined,{numeric:true}));
   const v=(t,u)=>t?esc(t)+(u||""):"—";
