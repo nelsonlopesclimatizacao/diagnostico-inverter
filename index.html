@@ -70,7 +70,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v2.0.2 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v2.1 (01/11/2026)</small>
 </header>
 
 <main>
@@ -119,6 +119,24 @@ a{color:#1d4f9a}
 <section id="v-tabelas" class="hidden">
   <h2>Termistores NTC (valores aproximados)</h2>
   <div class="note">Curva teórica (modelo β). Serve para identificar sensor <b>aberto, em curto ou muito fora</b> (&gt;10–15%). Para ajuste fino, use a tabela do manual do modelo. Meça com o sensor <b>desconectado</b> da placa e compare com a temperatura real do ponto (termômetro).</div>
+  <div class="card">
+    <h3>Testar sensor (NTC)</h3>
+    <ol class="steps" style="font-size:13.5px">
+      <li>Desligue o aparelho e <b>desconecte o sensor da placa</b> (medir ligado na placa dá leitura errada).</li>
+      <li>Multímetro em ohms. Meça os dois fios do sensor.</li>
+      <li>Meça a <b>temperatura real</b> do ponto onde o sensor fica (termômetro de contato no tubo ou no ar).</li>
+      <li>Escolha o tipo e compare abaixo. <b>OL</b> = aberto · <b>~0 Ω</b> = em curto · fora de ±10–15% = substituir.</li>
+      <li>Dica: aqueça o sensor na mão – a resistência tem que <b>cair</b> de forma suave. Se pula ou não muda, está ruim.</li>
+    </ol>
+    <div class="row">
+      <div style="flex:1;min-width:120px"><label>Tipo do sensor</label><select id="sT" onchange="testNtc()">
+        <option value="5,3470">5 kΩ (β3470)</option><option value="10,3435">10 kΩ (β3435)</option><option value="10,3950" selected>10 kΩ (β3950)</option><option value="15,3950">15 kΩ</option><option value="20,3950">20 kΩ</option><option value="25,3950">25 kΩ</option><option value="50,3950">50 kΩ (descarga)</option></select></div>
+      <div style="flex:1;min-width:100px"><label>Temperatura real (°C)</label><input id="sC" inputmode="decimal" oninput="testNtc()"></div>
+      <div style="flex:1;min-width:100px"><label>Medido (kΩ)</label><input id="sR" inputmode="decimal" oninput="testNtc()"></div>
+    </div>
+    <div id="sOut" class="chk" style="margin-top:8px">Informe a temperatura real (e a resistência medida, se já tiver).</div>
+    <p class="mut" style="margin:6px 0 0">Não sabe o tipo? Meça com o sensor a ~25 °C: o valor próximo de 5, 10, 15, 20, 25 ou 50 kΩ indica o nominal. Sensores de descarga (TP) costumam ser 50 kΩ; ambiente/serpentina, 10 a 20 kΩ.</p>
+  </div>
   <div class="scroll" id="ntc"></div>
   <p class="mut">Referências comuns: Midea/Springer T1, T2, T3, T4 ≈ 10 kΩ a 25 °C e sensor de descarga (TP) ≈ 50 kΩ a 25 °C. Gree, LG, Samsung e outras variam (5, 10, 15, 20 ou 50 kΩ). Confirme o valor nominal no manual ou na etiqueta do sensor.</p>
 
@@ -835,6 +853,22 @@ function renderNTC(){
   document.getElementById("ntc").innerHTML=h+"</table><p class='mut'>Valores em kΩ.</p>";
 }
 
+function testNtc(){
+  const [R0,B]=document.getElementById("sT").value.split(",").map(Number);
+  const g=id=>parseFloat(String(document.getElementById(id).value).replace(",","."));
+  const T=g("sC"),M=g("sR"),o=document.getElementById("sOut");
+  if(isNaN(T)){o.textContent="Informe a temperatura real (e a resistência medida, se já tiver).";return}
+  const e=R0*Math.exp(B*(1/(T+273.15)-1/298.15));
+  let t="Esperado a "+String(T).replace(".",",")+" °C: <b>"+e.toFixed(2).replace(".",",")+" kΩ</b> (faixa aceitável "+(e*0.9).toFixed(1).replace(".",",")+" a "+(e*1.1).toFixed(1).replace(".",",")+" kΩ).";
+  if(!isNaN(M)){
+    if(M<=0.05)t+=" Medido ~0 → <b style='color:#b3261e'>sensor em curto</b>.";
+    else{const d=(M-e)/e*100;const a=Math.abs(d);
+      t+=" Medido "+String(M).replace(".",",")+" kΩ ("+(d>0?"+":"")+d.toFixed(0)+"%) → "+(a<=10?"<b style='color:#1e7b46'>OK</b>":a<=15?"<b style='color:#b26b00'>no limite – confira a temperatura e a tabela do manual</b>":"<b style='color:#b3261e'>fora da curva – substituir (ou tipo errado selecionado)</b>")+".";
+      if(a>15){const ty=[[5,3470],[10,3435],[10,3950],[15,3950],[20,3950],[25,3950],[50,3950]];const best=ty.map(([r,b])=>[r,b,Math.abs(M-r*Math.exp(b*(1/(T+273.15)-1/298.15)))/M]).sort((x,y)=>x[2]-y[2])[0];if(best[2]<0.1)t+=" O valor bate com um sensor de <b>"+best[0]+" kΩ</b> – confira se o tipo está certo.";}
+    }
+  }
+  o.innerHTML=t;
+}
 function calcLra(){
   const L=parseFloat(String(document.getElementById("kL").value).replace(",","."));const o=document.getElementById("kLo");
   if(!(L>0)){o.textContent="Digite o LRA.";return}
