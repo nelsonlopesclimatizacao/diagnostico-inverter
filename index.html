@@ -66,7 +66,7 @@ a{color:#1d4f9a}
 <body>
 <header>
   <h1>Diagnóstico Inverter</h1>
-  <small>Nelson Lopes Climatização · consulta de campo · v1.6.1 (01/11/2026)</small>
+  <small>Nelson Lopes Climatização · consulta de campo · v1.7 (01/11/2026)</small>
 </header>
 
 <main>
@@ -456,19 +456,40 @@ add("Hisense","Split inverter (manual cód. 1036070 Rev00)","F","his",[
 ["Compressor aceso (vermelho) + ventilador interno parado","Degelo em modo aquecimento (não é defeito)","Retorna ao normal em até 10 min."]
 ]);
 
-add("Elgin","Eco Dream Inverter (HIFI/HIFE · HIQI/HIQE) – auto diagnóstico p.28","F","elgHI",[
-["EE","Falha no módulo EEPROM da unidade interna",""],
-["F1","Falha no sensor de temperatura ambiente da unidade interna","Medir o sensor desconectado e comparar com a aba Tabelas."],
+add("Elgin","Eco Dream Inverter (HIFI/HIFE · HIQI/HIQE) – auto diagnóstico p.29","F","elgHI",[
+["EF","Falha no módulo EEPROM da unidade externa","Reset de energia; persistindo, placa da condensadora."],
+["F6","Falha de comunicação entre a unidade interna e a externa","Ordem L-N-3-4 nos dois lados, emendas, tensão na condensadora, LED da placa externa (fluxo 2)."],
+["F8","Falha de comunicação entre a placa principal e o driver da placa (condensadora)","Cabos/conectores entre placa principal e driver na condensadora."],
+["E4","Falha de funcionamento do compressor (falha de fase)","Conector U-V-W, enrolamentos, IPM (fluxo 3)."],
+["E3","Falha de passo do compressor","Enrolamentos, conector U-V-W, IPM; compressor travado ou pressões não equalizadas."],
+["F9","Falha do módulo IPM","Teste do IPM em escala de diodo; antes de trocar a placa, confirme o compressor."],
+["E0","Temperatura de topo do compressor alta / proteção do compressor","Falta de fluido, restrição, troca de calor; protetor/sensor de topo e seu conector."],
+["F5","Falha no sensor de temperatura de descarga","Resistência do sensor desconectado; chicote."],
+["E5","Falha no sensor de temperatura de sucção","Resistência do sensor; fixação no tubo."],
 ["F4","Falha no sensor de temperatura do condensador da unidade externa","Resistência do sensor; chicote."],
+["F2","Falha no sensor de temperatura da unidade externa (ar externo)","Resistência do sensor; posição."],
+["E2","Falha no motor ventilador da unidade externa","Hélice travada; motor DC (310 V / 15 V / Vsp) e conector."],
+["P2","Proteção contra sobrecorrente da unidade externa","Tensão sob carga, condensadora suja, ventilador externo, carga em excesso, compressor."],
+["P0","Proteção contra falha de fase da corrente do compressor","Conector U-V-W, cabos, IPM."],
+["P7","Proteção contra alta/baixa tensão da unidade externa (corrente alternada)","Tensão da rede sob carga (admissível ±10% do valor de placa), neutro, conexões."],
+["P8","Proteção contra alta/baixa tensão da unidade externa (corrente contínua – barramento DC)","Barramento DC, capacitores, ponte, reator."],
+["P9","Proteção contra superaquecimento do módulo IPM","Pasta térmica/fixação do IPM, ventilação da condensadora, ventilador externo."],
 ["P1","Proteção contra superaquecimento da descarga","Falta de fluido, restrição, sensor de descarga, troca de calor."],
 ["P5","Proteção contra congelamento do evaporador da unidade interna","Filtro/turbina, serpentina suja, falta de fluido, sensor do evaporador."],
-["P7","Proteção contra alta/baixa tensão da unidade externa (corrente alternada)","Tensão da rede sob carga (admissível ±10% do valor de placa), neutro, conexões."],
-["P8","Proteção contra alta/baixa tensão da unidade externa (corrente contínua – barramento DC)","Medir barramento DC, capacitores, ponte, reator."],
-["P9","Proteção contra superaquecimento do módulo IPM","Pasta térmica/fixação do IPM, ventilação da condensadora, motor ventilador externo."],
-["L1","Falha de sobretensão",""],
-["L2","Falha de subtensão",""],
-["L3","Falha do compressor","Enrolamentos U-V-W, isolamento, IPM (fluxo 3 da aba Sintomas)."],
-["L4","Falha na leitura de corrente de fase","Placa da condensadora (circuito de leitura de corrente)."]
+["P6","Proteção contra superaquecimento do condensador da unidade externa","Condensadora suja/obstruída, recirculação de ar quente, ventilador externo, excesso de fluido."],
+["P4","Proteção contra superaquecimento do evaporador da unidade interna (aquecimento)","Filtro sujo, turbina, vazão de ar."],
+["PA","Proteção contra baixa temperatura ambiente da unidade externa","Fora da faixa de operação; conferir sensor F2 se o ambiente não estiver de fato frio."],
+["PE","Proteção contra alta temperatura ambiente da unidade externa","Externa acima de 43 °C (refrigeração), sol direto, recirculação; conferir sensor F2."],
+["EE","Falha no módulo EEPROM da unidade interna","Reset; persistindo, placa da evaporadora."],
+["F0","Falha do motor ventilador da unidade interna","Turbina travada, motor, conector."],
+["E1","Falha da placa principal da unidade interna",""],
+["F3","Falha no sensor do evaporador da unidade interna","Resistência do sensor; fixação no tubo."],
+["F1","Falha no sensor de temperatura ambiente da unidade interna","Resistência do sensor (aba Tabelas)."],
+["L1","Falha de sobretensão","Tensão da rede."],
+["L2","Falha de subtensão","Tensão da rede sob carga; bitola e conexões."],
+["L3","Falha do compressor","Enrolamentos U-V-W, isolamento, IPM (fluxo 3)."],
+["L4","Falha na leitura de corrente de fase","Circuito de leitura de corrente da placa externa."],
+["L5","Falha de acionamento","Acionamento do compressor: IPM/driver, conector U-V-W."]
 ]);
 
 /* ---- PHILCO ---- */
@@ -483,7 +504,7 @@ const BRAND_NOTES={
  "Gree":"F0, H1 e C-codes mudam de sentido entre linhas (SmartWind, G-Max, G-Prime, comerciais). Confirme a linha na etiqueta.",
  "Electrolux/Consul":"O mesmo código muda de sentido entre linhas (E1, E5, E8). As linhas VI/VE 18/22 usam padrão de códigos igual ao da Gree (F1, F2, H6, C5, U8). Linhas UE/JE/YE (R-32): manual do usuário não traz tabela de códigos. <b>Garantia:</b> 3 anos o conjunto e 10 anos o compressor; a garantia de 10 anos é perdida se o sistema frigorífico for modificado por terceiro com procedimento não homologado pela Electrolux — em aparelho na garantia, oriente o cliente a acionar a autorizada.",
  "Agratto/Vix":"A tabela da LIV Inverter (LCS/LCST) existe no manual oficial, mas a extração não permitiu parear código × significado com segurança. Cadastre do manual impresso.",
- "Elgin":"<b>Eco Dream Inverter (HI):</b> a tabela de auto diagnóstico do manual de instalação tem 35 itens; nesta versão entraram só os códigos legíveis na foto (EE, F1, F4, P1, P5, P7–P9, L1–L4). Os demais (EEPROM externa, comunicação, sensores de descarga/sucção, ventiladores, falta de fase etc.) aguardam foto nítida da p.28 – não confie em código de memória. Garantia Elgin: instalação por empresa credenciada com o CTI preenchido; fora disso a garantia cai para 90 dias, e a manutenção preventiva é obrigatória. Eco Inverter: o manual do usuário não traz tabela de códigos. Peça o manual técnico à Elgin (SAC 0800 70 35446) ou cadastre a partir do manual da condensadora.",
+ "Elgin":"<b>Eco Dream Inverter (HI):</b> tabela de auto diagnóstico completa (33 códigos) do manual de instalação, p.29. Garantia Elgin: instalação por empresa credenciada com o CTI preenchido; fora disso a garantia cai para 90 dias, e a manutenção preventiva é obrigatória. Eco Inverter: o manual do usuário não traz tabela de códigos. Peça o manual técnico à Elgin (SAC 0800 70 35446) ou cadastre a partir do manual da condensadora.",
  "Philco":"Sem tabela confirmada da Philco Brasil nesta versão. Cuidado: tabelas \"Philco\" em espanhol são de outra empresa (Argentina). Cadastre a partir do manual do seu modelo.",
  "Hisense":"O manual de uso e instalação (cód. 1036070 Rev00) não traz tabela de códigos de erro, só o lembrete FC e a tabela de problemas simples. Para códigos, é preciso o manual de serviço. Dados de tubulação e elétrica estão na aba Instalação.",
  "TCL":"Sem tabela confirmada nesta versão. Cadastre a partir do manual do modelo (TAC-xxCSA1-INV etc.).",
